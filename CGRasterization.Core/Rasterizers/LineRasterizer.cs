@@ -4,7 +4,7 @@ using CGRasterization.Core.Rasterizers.Abstractions;
 
 namespace CGRasterization.Core.Rasterizers;
 
-public class LineRasterizer : IRasterizer<Line>
+public class LineRasterizer : BaseRasterizer, IRasterizer<Line>
 {
     public void Rasterize(Line shape, PixelBuffer buffer)
     {
@@ -19,7 +19,7 @@ public class LineRasterizer : IRasterizer<Line>
             int sy = y0 < y1 ? 1 : -1;
             int x = x0;
             int y = y0;
-            PutPixel(shape, buffer, x, y);
+            PutPixel(x, y, shape.Color, buffer);
             if (dx >= dy)
             {
                 int d = 2 * dy - dx;
@@ -35,7 +35,7 @@ public class LineRasterizer : IRasterizer<Line>
                         y += sy;
                         d += 2 * (dy - dx);
                     }
-                    PutPixel(shape, buffer, x, y);
+                    PutPixel(x, y, shape.Color, buffer);
                 }
             }else
             {
@@ -52,17 +52,8 @@ public class LineRasterizer : IRasterizer<Line>
                         x += sx;
                         d += 2 * (dx - dy);
                     }
-                    PutPixel(shape, buffer, x, y);
+                    PutPixel(x, y, shape.Color, buffer);
                 }
             }
-    }
-
-    private void PutPixel(Line shape, PixelBuffer buffer, int x, int y)
-    {
-        if (x < 0 || y < 0 || x >= buffer.Width || y >= buffer.Height) return;
-        int index = y*buffer.Stride + x*buffer.BytesPerPixel;
-        buffer.Pixels[index] = shape.Color.R;
-        buffer.Pixels[index + 1] = shape.Color.G;
-        buffer.Pixels[index + 2] = shape.Color.B;
     }
 }

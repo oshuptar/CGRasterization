@@ -7,6 +7,7 @@ public class Circle
     public int Radius { get; set; }
     public Point  Center { get; set; }
     
+    public Color Color { get; set; } = Color.Black;
     public Circle(Point center, int radius)
     {
         Radius = radius;

@@ -1,3 +1,4 @@
+using System.Drawing;
 using CGRasterization.Core.Buffers;
 
 namespace CGRasterization.Core.Rasterizers.Abstractions;
