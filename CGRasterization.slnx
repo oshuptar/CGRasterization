@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="CGRasterization.App/CGRasterization.App.csproj" />
+  <Project Path="CGRasterization.Core/CGRasterization.Core.csproj" />
+</Solution>
