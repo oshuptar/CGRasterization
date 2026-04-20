@@ -25,4 +25,8 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CGRasterization.Core\CGRasterization.Core.csproj" />
+  </ItemGroup>
 </Project>

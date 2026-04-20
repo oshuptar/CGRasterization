@@ -7,7 +7,11 @@
              x:DataType="vm:CanvasControlViewModel"
              x:Class="CGRasterization.App.Views.Controls.CanvasControl">
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-        <Image Source="{Binding Canvas.ImageSource}"
-               Stretch="None"/>
+        <Image x:Name="CanvasImage"
+               Source="{Binding Canvas.ImageSource}"
+               Stretch="None"
+               PointerPressed="InputElement_OnPointerPressed"
+               PointerMoved="InputElement_OnPointerMoved"
+               PointerReleased="InputElement_OnPointerReleased"/>
     </ScrollViewer>
 </UserControl>
