@@ -8,6 +8,6 @@ public class CircleRasterizer : IRasterizer<Circle>
 {
     public void Rasterize(Circle shape, PixelBuffer buffer)
     {
-        
+        Console.WriteLine($"Rasterizing {nameof(Circle)}");
     }
 }

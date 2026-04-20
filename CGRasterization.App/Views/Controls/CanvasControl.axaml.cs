@@ -36,7 +36,7 @@ public partial class CanvasControl : UserControl
         e.Pointer.Capture(null);
         IsPressed = false;
         End = e.GetPosition(canvas);
-        vm.AddLine(new System.Drawing.Point((int)Start.X,(int) Start.Y), new System.Drawing.Point((int)End.X,(int) End.Y));
-        CanvasImage.InvalidateVisual();
+        vm.AddShape(new System.Drawing.Point((int)Start.X,(int) Start.Y),
+            new System.Drawing.Point((int)End.X,(int) End.Y));
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -7,7 +6,6 @@ using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CGRasterization.App.Buffers;
-using CGRasterization.Core.Abstractions;
 using CGRasterization.Core.Buffers;
 using CGRasterization.Core.Buffers.Enums;
 using CGRasterization.Core.Primitives;
@@ -32,7 +30,7 @@ public class Canvas : INotifyPropertyChanged
     public int Width => Bitmap.Width;
     public int Height => Bitmap.Height;
     public ObservableCollection<Line> Lines { get; set; } = new();
-
+    public ObservableCollection<Circle> Circles { get; set; } = new();
     public Canvas(int width, int height)
     {
         byte[] bytes = new byte[width * height * 4];
@@ -46,29 +44,20 @@ public class Canvas : INotifyPropertyChanged
         Bitmap = new DirectBitmap(width, height, new Vector(96, 96), PixelFormat.Rgba8888, bytes);
         Bitmap.UpdateBitmap();
         ImageSource = Bitmap.Bitmap;
-        Lines.CollectionChanged += OnLinesChanged;
+        Lines.CollectionChanged += OnCollectionChanged<Line>;
+        Circles.CollectionChanged += OnCollectionChanged<Circle>;
     }
     
-    private void OnLinesChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    private void OnCollectionChanged<TShape>(object? sender, NotifyCollectionChangedEventArgs e)
     {
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
                 if (e.NewItems is not null)
                 {
-                    foreach (Line line in e.NewItems)
-                    {
-                        DrawLine(line);
-                    }
+                    foreach (TShape shape in e.NewItems)
+                        DrawShape(shape);
                 }
-                break;
-
-            case NotifyCollectionChangedAction.Remove:
-                RedrawAll(Lines);
-                break;
-
-            case NotifyCollectionChangedAction.Reset:
-                RedrawAll(Lines);
                 break;
         }
         Bitmap.UpdateBitmap();
@@ -85,24 +74,11 @@ public class Canvas : INotifyPropertyChanged
             Bitmap.PixelFormat == PixelFormats.Gray8 ? ColorFormat.Grayscale : ColorFormat.Rgba);
     }
 
-    private void DrawLine(Line line)
+    private void DrawShape<TShape>(TShape shape)
     {
         RasterizerFactory factory = new RasterizerFactory();
-        var lineRasterizer = factory.GetLineRasterizer();
-        lineRasterizer.Rasterize(line, GetPixelBuffer());
-    }
-    
-
-    private void RedrawAll(IEnumerable<IDrawable> collection)
-    {
-        
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        var lineRasterizer = factory.GetRasterizer<TShape>();
+        lineRasterizer?.Rasterize(shape, GetPixelBuffer());
     }
 
     private void InvalidateImage()
@@ -110,5 +86,10 @@ public class Canvas : INotifyPropertyChanged
         var current = ImageSource;
         ImageSource = null;
         ImageSource = current;
+    }
+    public event PropertyChangedEventHandler? PropertyChanged;
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

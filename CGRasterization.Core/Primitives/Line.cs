@@ -11,9 +11,8 @@ public class Line : IMovable, IDrawable
     public int Thickness { get; set; } = 1;
     
     public Color Color { get; set; } = Color.Black;
-    public double Dx => End.X - Start.X;
-    public double Dy => End.Y - Start.Y;
-    
+    public int Dx => End.X - Start.X;
+    public int Dy => End.Y - Start.Y;
     public double? Slope => Dx == 0 ? null : Dy / Dx;
 
     public Line(Point startPoint, Point endPoint)

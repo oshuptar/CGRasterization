@@ -7,9 +7,15 @@ public class Circle
     public int Radius { get; set; }
     public Point  Center { get; set; }
     
-    public Circle(int radius, Point center)
+    public Circle(Point center, int radius)
     {
         Radius = radius;
         Center = center;
+    }
+    
+    public Circle(Point center, Point onCircle)
+    {
+        Center = center;
+        Radius = (int)Math.Sqrt((Math.Pow(Math.Abs(onCircle.X - center.X), 2) + Math.Pow(Math.Abs(onCircle.Y - center.Y), 2)));
     }
 }
