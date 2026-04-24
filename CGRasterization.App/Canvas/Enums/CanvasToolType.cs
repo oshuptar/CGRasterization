@@ -1,8 +1,10 @@
 namespace CGRasterization.App.Canvas.Enums;
 
-public enum ShapeType
+public enum CanvasToolType
 {
     Line,
     Circle,
-    None
+    Polygon,
+    Select,
+    Move
 }

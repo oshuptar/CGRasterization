@@ -15,11 +15,6 @@
         <StackPanel 
             Orientation="Horizontal"
             Spacing="8">
-            <RadioButton Content="Move"
-                         GroupName="ShapeTypes"
-                         IsChecked="{Binding IsMoveShape}"
-                         Command="{Binding SetMoveCommand}" />
-            
             <RadioButton Content="Line"
                          GroupName="ShapeTypes"
                          IsChecked="{Binding IsLineShape}"

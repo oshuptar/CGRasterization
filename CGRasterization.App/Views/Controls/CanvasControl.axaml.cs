@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using CGRasterization.App.Canvas.Tools;
 using CGRasterization.App.ViewModels;
 
 
@@ -15,28 +16,44 @@ public partial class CanvasControl : UserControl
     {
         InitializeComponent();
     }
+    
+    private CanvasPointerContext? CreateContext(object? sender, PointerEventArgs e)
+    {
+        if (DataContext is not CanvasControlViewModel vm)
+            return null;
+        if (sender is not Control canvas)
+            return null;
+        return new CanvasPointerContext
+        {
+            Position = e.GetPosition(canvas),
+            ViewModel = vm,
+            Pointer = e.Pointer,
+            Canvas = canvas
+        };
+    }
 
     private void InputElement_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
-        if (DataContext is not CanvasControlViewModel vm || sender is not Control canvas) return;
-        e.Pointer.Capture(canvas);
-        IsPressed = true;
-        Start = e.GetPosition(canvas);
+        var context = CreateContext(sender, e);
+        if (context is null) return;
+
+        e.Pointer.Capture(context.Canvas);
+        context.ViewModel.CurrentTool.OnPointerPressed(context);
     }
 
     private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
     {
-        // can be used to draw temporary line
+        var context = CreateContext(sender, e);
+        if (context is null) return;
+
+        context.ViewModel.CurrentTool.OnPointerMoved(context);
     }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (!IsPressed) return;
-        if (DataContext is not CanvasControlViewModel vm || sender is not Control canvas) return;
+        var context = CreateContext(sender, e);
+        if (context is null) return;
+        context.ViewModel.CurrentTool.OnPointerReleased(context);
         e.Pointer.Capture(null);
-        IsPressed = false;
-        End = e.GetPosition(canvas);
-        vm.AddShape(new System.Drawing.Point((int)Start.X,(int) Start.Y),
-            new System.Drawing.Point((int)End.X,(int) End.Y));
     }
 }
