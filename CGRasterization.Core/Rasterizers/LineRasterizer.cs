@@ -19,7 +19,8 @@ public class LineRasterizer : BaseRasterizer, IRasterizer<Line>
             int sy = y0 < y1 ? 1 : -1;
             int x = x0;
             int y = y0;
-            PutPixel(x, y, shape.Color, buffer);
+            Brush.Brush brush = new Brush.Brush(shape.Thickness, shape.Color);
+            PutPixel(x, y, brush, buffer);
             if (dx >= dy)
             {
                 int d = 2 * dy - dx;
@@ -35,7 +36,7 @@ public class LineRasterizer : BaseRasterizer, IRasterizer<Line>
                         y += sy;
                         d += 2 * (dy - dx);
                     }
-                    PutPixel(x, y, shape.Color, buffer);
+                    PutPixel(x, y, brush, buffer);
                 }
             }else
             {
@@ -52,7 +53,7 @@ public class LineRasterizer : BaseRasterizer, IRasterizer<Line>
                         x += sx;
                         d += 2 * (dx - dy);
                     }
-                    PutPixel(x, y, shape.Color, buffer);
+                    PutPixel(x, y,brush, buffer);
                 }
             }
     }

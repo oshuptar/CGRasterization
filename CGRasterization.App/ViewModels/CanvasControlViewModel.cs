@@ -20,18 +20,23 @@ public class CanvasControlViewModel : ViewModelBase
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsCircleShape));
             OnPropertyChanged(nameof(IsLineShape));
+            OnPropertyChanged(nameof(IsMoveShape));
         }
     }
 
     public bool IsLineShape => ShapeType == ShapeType.Line;
     public bool IsCircleShape => ShapeType == ShapeType.Circle;
+    public bool IsMoveShape => ShapeType == ShapeType.None;
     public RelayCommand SetLineShapeCommand { get; }
     public RelayCommand SetCircleShapeCommand { get; }
+    public RelayCommand SetMoveCommand { get; }
 
     public CanvasControlViewModel()
     {
         SetLineShapeCommand = new RelayCommand(() => SetShapeType(ShapeType.Line), () => true);
         SetCircleShapeCommand = new RelayCommand(() => SetShapeType(ShapeType.Circle), () => true);
+        SetMoveCommand = new RelayCommand(() => SetShapeType(ShapeType.None), () => true);
+        ShapeType = ShapeType.None;
     }
 
     public void SetShapeType(ShapeType shapeType)

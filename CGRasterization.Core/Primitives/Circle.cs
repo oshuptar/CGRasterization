@@ -6,7 +6,7 @@ public class Circle
 {
     public int Radius { get; set; }
     public Point  Center { get; set; }
-    
+    public int Thickness { get; set; }
     public Color Color { get; set; } = Color.Black;
     public Circle(Point center, int radius)
     {
@@ -14,9 +14,10 @@ public class Circle
         Center = center;
     }
     
-    public Circle(Point center, Point onCircle)
+    public Circle(Point center, Point onCircle, int thickness = 1)
     {
         Center = center;
         Radius = (int)Math.Sqrt((Math.Pow(Math.Abs(onCircle.X - center.X), 2) + Math.Pow(Math.Abs(onCircle.Y - center.Y), 2)));
+        Thickness = thickness;
     }
 }

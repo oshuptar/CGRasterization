@@ -13,7 +13,8 @@ public class CircleRasterizer : BaseRasterizer, IRasterizer<Circle>
         int x = 0;
         int y = shape.Radius;
         int d = 1 - shape.Radius; int dE = 3; int dSE = 5 - 2 * shape.Radius;
-        PutSymmetricPoints(shape, x, y, buffer);
+        Brush.Brush brush = new Brush.Brush(shape.Thickness, shape.Color);
+        PutSymmetricPoints(shape, x, y, brush, buffer);
         while (x < y)
         {
             x++;
@@ -30,22 +31,21 @@ public class CircleRasterizer : BaseRasterizer, IRasterizer<Circle>
                 dSE += 4;
                 y--;
             }
-            PutSymmetricPoints(shape, x, y, buffer);
+            PutSymmetricPoints(shape, x, y, brush, buffer);
         }
     }
 
-    private void PutSymmetricPoints(Circle shape, int x, int y, PixelBuffer buffer)
+    private void PutSymmetricPoints(Circle shape, int x, int y, Brush.Brush brush, PixelBuffer buffer)
     {
         int cx = shape.Center.X;
         int cy = shape.Center.Y;
-        Color color = shape.Color;
-        PutPixel(cx + x, cy + y, color, buffer);
-        PutPixel(cx - x, cy + y, color, buffer);
-        PutPixel(cx + x, cy - y, color, buffer);
-        PutPixel(cx - x, cy - y, color, buffer);
-        PutPixel(cx + y, cy + x, color, buffer);
-        PutPixel(cx - y, cy + x, color, buffer);
-        PutPixel(cx + y, cy - x, color, buffer);
-        PutPixel(cx - y, cy - x, color, buffer);
+        PutPixel(cx + x, cy + y, brush, buffer);
+        PutPixel(cx - x, cy + y, brush, buffer);
+        PutPixel(cx + x, cy - y, brush, buffer);
+        PutPixel(cx - x, cy - y, brush, buffer);
+        PutPixel(cx + y, cy + x, brush, buffer);
+        PutPixel(cx - y, cy + x, brush, buffer);
+        PutPixel(cx + y, cy - x, brush, buffer);
+        PutPixel(cx - y, cy - x, brush, buffer);
     }
 }
