@@ -9,12 +9,21 @@
         x:DataType="vm:MainWindowViewModel"
         Title="Rasterization"
         RequestedThemeVariant="Light">
-        <Border
-                Margin="10"
-                BorderThickness="1"
-                BorderBrush="#D0D7DE"
-                Background="#F8F9FB"
-                BoxShadow="0 4 14 0 #22000000">
-                <controls:CanvasControl DataContext="{Binding CanvasControlViewModel}"/>
-        </Border>
+        <Grid>
+                <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Menu >
+                        <MenuItem Header="Clear" Command="{Binding ClearBitmapCommand}"/>
+                </Menu>
+                <Border Grid.Row="1"
+                        Margin="10"
+                        BorderThickness="1"
+                        BorderBrush="#D0D7DE"
+                        Background="#F8F9FB"
+                        BoxShadow="0 4 14 0 #22000000">
+                        <controls:CanvasControl DataContext="{Binding CanvasControlViewModel}"/>
+                </Border>
+        </Grid>
 </Window>

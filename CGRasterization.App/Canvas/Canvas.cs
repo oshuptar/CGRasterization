@@ -108,6 +108,13 @@ public class Canvas : INotifyPropertyChanged
             Bitmap.Pixels[i + 3] = 255;
         }
     }
+
+    public void ClearCanvas()
+    {
+        Clear();
+        Bitmap.UpdateBitmap();
+        InvalidateImage();
+    }
     public event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
     {
