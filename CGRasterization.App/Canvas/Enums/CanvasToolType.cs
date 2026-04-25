@@ -6,5 +6,6 @@ public enum CanvasToolType
     DrawCircle,
     DrawPolygon,
     SelectShape,
-    MoveShape
+    MoveShape,
+    None
 }

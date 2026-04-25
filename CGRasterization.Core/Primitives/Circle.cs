@@ -33,5 +33,10 @@ public class Circle : IShape
         double distanceToCircleLine = Math.Abs(distanceFromCenter - Radius);
         return Math.Max(0, distanceToCircleLine - thicknessRadius);
     }
-    public override string ToString() => $"Circle: Center=({Center.X}, {Center.Y}), Radius={Radius}, Thickness={Thickness}";
+    public override string ToString() => $"Circle: Center=({Center.X}, {Center.Y})\nRadius={Radius}\nThickness={Thickness}\nColor={Color}";
+    
+    public void MoveBy(int dx, int dy)
+    {
+        Center = new Point(Center.X + dx, Center.Y + dy);
+    }
 }

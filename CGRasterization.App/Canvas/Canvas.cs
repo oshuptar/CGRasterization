@@ -76,6 +76,9 @@ public class Canvas : INotifyPropertyChanged
             case NotifyCollectionChangedAction.Remove:
                 RedrawShapes();
                 break;
+            default:
+                RedrawShapes();
+                break;
         }
         Bitmap.UpdateBitmap();
         InvalidateImage();

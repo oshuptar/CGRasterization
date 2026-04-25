@@ -38,7 +38,7 @@ public partial class CanvasControl : UserControl
         if (context is null) return;
 
         e.Pointer.Capture(context.Canvas);
-        context.ViewModel.CurrentTool.OnPointerPressed(context);
+        context.ViewModel.CurrentTool?.OnPointerPressed(context);
     }
 
     private void InputElement_OnPointerMoved(object? sender, PointerEventArgs e)
@@ -46,14 +46,14 @@ public partial class CanvasControl : UserControl
         var context = CreateContext(sender, e);
         if (context is null) return;
 
-        context.ViewModel.CurrentTool.OnPointerMoved(context);
+        context.ViewModel.CurrentTool?.OnPointerMoved(context);
     }
 
     private void InputElement_OnPointerReleased(object? sender, PointerReleasedEventArgs e)
     {
         var context = CreateContext(sender, e);
         if (context is null) return;
-        context.ViewModel.CurrentTool.OnPointerReleased(context);
+        context.ViewModel.CurrentTool?.OnPointerReleased(context);
         e.Pointer.Capture(null);
     }
 }

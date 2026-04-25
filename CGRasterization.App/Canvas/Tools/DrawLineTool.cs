@@ -14,6 +14,7 @@ public sealed class DrawLineTool : ICanvasTool
     {
         _isDrawing = true;
         _start = context.Position;
+        context.Pointer.Capture(context.Canvas);
     }
     public void OnPointerMoved(CanvasPointerContext context)
     {
