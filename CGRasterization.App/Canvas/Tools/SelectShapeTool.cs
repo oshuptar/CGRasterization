@@ -18,7 +18,7 @@ public class SelectShapeTool : ICanvasTool
                 shape => shape.DistanceTo(clickPosition)
             )
             .FirstOrDefault();
-        context.ViewModel.SelectedShape = selectedShape;
+        context.ViewModel.SelectShape(selectedShape);
     }
     private static double GetSelectionTolerance(IShape shape)
     {

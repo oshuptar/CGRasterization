@@ -1,3 +1,4 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -49,7 +50,9 @@ public class Canvas : INotifyPropertyChanged
     }
     public void RedrawShapes()
     {
+        Console.WriteLine("Redrawing Shapes");
         PixelBuffer buffer = GetPixelBuffer();
+        Clear();
         foreach (IShape shape in Shapes)
         {
             DrawShape(shape, buffer);
@@ -71,8 +74,7 @@ public class Canvas : INotifyPropertyChanged
                 }
                 break;
             case NotifyCollectionChangedAction.Remove:
-                if (e.OldItems is not null)
-                    RedrawShapes();
+                RedrawShapes();
                 break;
         }
         Bitmap.UpdateBitmap();
@@ -91,6 +93,17 @@ public class Canvas : INotifyPropertyChanged
         var current = ImageSource;
         ImageSource = null;
         ImageSource = current;
+    }
+    private void Clear()
+    {
+        Console.WriteLine("Clearing Canvas");
+        for (int i = 0; i < Bitmap.Pixels.Length; i += 4)
+        {
+            Bitmap.Pixels[i] = 255;
+            Bitmap.Pixels[i + 1] = 255;
+            Bitmap.Pixels[i + 2] = 255;
+            Bitmap.Pixels[i + 3] = 255;
+        }
     }
     public event PropertyChangedEventHandler? PropertyChanged;
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

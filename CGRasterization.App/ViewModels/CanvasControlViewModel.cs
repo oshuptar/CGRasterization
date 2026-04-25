@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CGRasterization.App.Canvas.Enums;
 using CGRasterization.App.Canvas.Tools;
@@ -21,6 +22,8 @@ public class CanvasControlViewModel : ViewModelBase
 
             field = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(IsSelectedShape));
+            OnPropertyChanged(nameof(SelectedShapeControlsOpacity));
         }
     }
     public CanvasToolType SelectedToolType
@@ -36,29 +39,54 @@ public class CanvasControlViewModel : ViewModelBase
             OnPropertyChanged(nameof(IsSelectShapeMode));
         }
     }
-    public bool IsSelectShapeMode => SelectedToolType == CanvasToolType.Select;
-    public bool IsDrawLineMode => SelectedToolType == CanvasToolType.Line;
-    public bool IsDrawCircleMode => SelectedToolType == CanvasToolType.Circle;
+    public double SelectedShapeControlsOpacity => IsSelectedShape ? 1.0 : 0.0;
+    public bool IsSelectedShape => SelectedShape != null;
+    public bool IsSelectShapeMode => SelectedToolType == CanvasToolType.SelectShape;
+    public bool IsDrawLineMode => SelectedToolType == CanvasToolType.DrawLine;
+    public bool IsDrawCircleMode => SelectedToolType == CanvasToolType.DrawCircle;
     public RelayCommand SetLineDrawToolCommand { get; }
     public RelayCommand SetCircleDrawToolCommand { get; }
     public RelayCommand SetSelectShapeToolCommand { get; }
+    public RelayCommand RemoveShapeCommand { get; }
+    public RelayCommand MoveShapeCommand { get; }
     private readonly Dictionary<CanvasToolType, ICanvasTool> _tools;
     public ICanvasTool CurrentTool => _tools[SelectedToolType];
     public CanvasControlViewModel()
     {
-        SetLineDrawToolCommand = new RelayCommand(() => SetShapeType(CanvasToolType.Line), () => true);
-        SetCircleDrawToolCommand = new RelayCommand(() => SetShapeType(CanvasToolType.Circle), () => true);
-        SetSelectShapeToolCommand = new RelayCommand(() => SetShapeType(CanvasToolType.Select), () => true);
+        SetLineDrawToolCommand = new RelayCommand(() => SetToolMode(CanvasToolType.DrawLine), () => true);
+        SetCircleDrawToolCommand = new RelayCommand(() => SetToolMode(CanvasToolType.DrawCircle), () => true);
+        SetSelectShapeToolCommand = new RelayCommand(() => SetToolMode(CanvasToolType.SelectShape), () => true);
+        RemoveShapeCommand = new RelayCommand(() => RemoveShape(SelectedShape), () => true);
+        MoveShapeCommand = new RelayCommand(() => SetToolMode(CanvasToolType.MoveShape), () => true);
         _tools = new Dictionary<CanvasToolType, ICanvasTool>
         {
-            [CanvasToolType.Line] = new DrawLineTool(),
-            [CanvasToolType.Circle] = new DrawCircleTool(),
-            [CanvasToolType.Select] = new SelectShapeTool(),
+            [CanvasToolType.DrawLine] = new DrawLineTool(),
+            [CanvasToolType.DrawCircle] = new DrawCircleTool(),
+            [CanvasToolType.SelectShape] = new SelectShapeTool(),
         };
-        SelectedToolType = CanvasToolType.Line;
+        SelectedToolType = CanvasToolType.DrawLine;
     }
-    public void SetShapeType(CanvasToolType canvasToolType) => SelectedToolType = canvasToolType;
-    public void AddShape(IShape shape) => Canvas.Shapes.Add(shape);
-    public void SelectShape(IShape shape) => SelectedShape = shape;
-    public void RemoveShape(IShape shape) => Canvas.Shapes.Remove(shape);
+    public void SetToolMode(CanvasToolType canvasToolType)
+    {
+        SelectedToolType = canvasToolType;
+        ResetSelection();
+    }
+
+    public void AddShape(IShape? shape)  {
+        Console.WriteLine("Adding shape " + shape);
+        if(shape is not null)
+            Canvas.Shapes.Add(shape);
+    }
+    public void SelectShape(IShape? shape) => SelectedShape = shape;
+    public void RemoveShape(IShape? shape)
+    {
+        Console.WriteLine("Removing shape " + shape);
+        if (shape is not null)
+            Canvas.Shapes.Remove(shape);
+        ResetSelection();
+    }
+    private void ResetSelection()
+    {
+        SelectedShape = null;
+    }
 }
