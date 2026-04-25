@@ -5,6 +5,5 @@ public enum CanvasToolType
     Line,
     Circle,
     Polygon,
-    Select,
-    Move
+    Select
 }

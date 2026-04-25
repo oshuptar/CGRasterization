@@ -2,7 +2,7 @@ using System.Drawing;
 
 namespace CGRasterization.Core.Abstractions;
 
-public interface IMovable
+public interface ISelectable
 {
-    public void Move(Point point);
+    public double DistanceTo(Point point);
 }

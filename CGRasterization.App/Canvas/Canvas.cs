@@ -8,13 +8,15 @@ using Avalonia.Platform;
 using CGRasterization.App.Buffers;
 using CGRasterization.Core.Buffers;
 using CGRasterization.Core.Buffers.Enums;
-using CGRasterization.Core.Primitives;
-using CGRasterization.Core.Rasterizers.Factory;
+using CGRasterization.Core.Primitives.Abstractions;
+using CGRasterization.Core.Rasterizers;
+using CGRasterization.Core.Rasterizers.Abstractions;
 
 namespace CGRasterization.App.Canvas;
 
 public class Canvas : INotifyPropertyChanged
 {
+    private readonly IShapeRasterizer _shapeRasterizer = new ShapeRasterizer();
     private DirectBitmap Bitmap { get; set; }
     public WriteableBitmap? ImageSource
     {
@@ -29,8 +31,7 @@ public class Canvas : INotifyPropertyChanged
     }
     public int Width => Bitmap.Width;
     public int Height => Bitmap.Height;
-    public ObservableCollection<Line> Lines { get; set; } = new();
-    public ObservableCollection<Circle> Circles { get; set; } = new();
+    public ObservableCollection<IShape> Shapes { get; } = new();
     public Canvas(int width, int height)
     {
         byte[] bytes = new byte[width * height * 4];
@@ -44,43 +45,47 @@ public class Canvas : INotifyPropertyChanged
         Bitmap = new DirectBitmap(width, height, new Vector(96, 96), PixelFormat.Rgba8888, bytes);
         Bitmap.UpdateBitmap();
         ImageSource = Bitmap.Bitmap;
-        Lines.CollectionChanged += OnCollectionChanged<Line>;
-        Circles.CollectionChanged += OnCollectionChanged<Circle>;
+        Shapes.CollectionChanged += OnCollectionChanged;
+    }
+    public void RedrawShapes()
+    {
+        PixelBuffer buffer = GetPixelBuffer();
+        foreach (IShape shape in Shapes)
+        {
+            DrawShape(shape, buffer);
+        }
+        Bitmap.UpdateBitmap();
+        InvalidateImage();
     }
     
-    private void OnCollectionChanged<TShape>(object? sender, NotifyCollectionChangedEventArgs e)
+    private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
+        PixelBuffer buffer = GetPixelBuffer();
         switch (e.Action)
         {
             case NotifyCollectionChangedAction.Add:
                 if (e.NewItems is not null)
                 {
-                    foreach (TShape shape in e.NewItems)
-                        DrawShape(shape);
+                    foreach (IShape shape in e.NewItems)
+                        DrawShape(shape, buffer);
                 }
+                break;
+            case NotifyCollectionChangedAction.Remove:
+                if (e.OldItems is not null)
+                    RedrawShapes();
                 break;
         }
         Bitmap.UpdateBitmap();
         InvalidateImage();
     }
 
-    private PixelBuffer GetPixelBuffer()
-    {
-        return new PixelBuffer(
+    private PixelBuffer GetPixelBuffer() => new(
             Bitmap.Width,
             Bitmap.Height, 
             Bitmap.Pixels,
             Bitmap.Stride,
             Bitmap.PixelFormat == PixelFormats.Gray8 ? ColorFormat.Grayscale : ColorFormat.Rgba);
-    }
-
-    private void DrawShape<TShape>(TShape shape)
-    {
-        RasterizerFactory factory = new RasterizerFactory();
-        var lineRasterizer = factory.GetRasterizer<TShape>();
-        lineRasterizer?.Rasterize(shape, GetPixelBuffer());
-    }
-
+    private void DrawShape(IShape shape, PixelBuffer buffer) => shape.RasterizeWith(_shapeRasterizer, buffer);
     private void InvalidateImage()
     {
         var current = ImageSource;

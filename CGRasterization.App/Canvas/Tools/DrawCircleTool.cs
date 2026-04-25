@@ -1,9 +1,11 @@
 using Avalonia;
 using CGRasterization.App.Canvas.Tools.Abstractions;
+using CGRasterization.App.Converters;
+using CGRasterization.Core.Primitives;
 
 namespace CGRasterization.App.Canvas.Tools;
 
-public sealed class CircleTool : ICanvasTool
+public sealed class DrawCircleTool : ICanvasTool
 {
     private Point _center;
     private bool _isDrawing;
@@ -15,8 +17,8 @@ public sealed class CircleTool : ICanvasTool
     }
     public void OnPointerMoved(CanvasPointerContext context)
     {
-        if (!_isDrawing)
-            return;
+        // Add potential logic here
+        return;
     }
 
     public void OnPointerReleased(CanvasPointerContext context)
@@ -27,12 +29,9 @@ public sealed class CircleTool : ICanvasTool
         _isDrawing = false;
         context.Pointer.Capture(null);
         context.ViewModel.AddShape(
-            ToDrawingPoint(_center),
-            ToDrawingPoint(context.Position));
-    }
-
-    private static System.Drawing.Point ToDrawingPoint(Point p)
-    {
-        return new System.Drawing.Point((int)p.X, (int)p.Y);
+            new Circle(
+                CoordinateConverter.ToDrawingPoint(_center),
+                CoordinateConverter.ToDrawingPoint(context.Position)
+                ));
     }
 }

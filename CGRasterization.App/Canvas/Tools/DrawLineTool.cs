@@ -1,9 +1,11 @@
 using Avalonia;
 using CGRasterization.App.Canvas.Tools.Abstractions;
+using CGRasterization.App.Converters;
+using CGRasterization.Core.Primitives;
 
 namespace CGRasterization.App.Canvas.Tools;
 
-public sealed class LineTool : ICanvasTool
+public sealed class DrawLineTool : ICanvasTool
 {
     private Point _start;
     private bool _isDrawing;
@@ -13,7 +15,6 @@ public sealed class LineTool : ICanvasTool
         _isDrawing = true;
         _start = context.Position;
     }
-
     public void OnPointerMoved(CanvasPointerContext context)
     {
         if (!_isDrawing)
@@ -23,7 +24,6 @@ public sealed class LineTool : ICanvasTool
         //     ToDrawingPoint(_start),
         //     ToDrawingPoint(context.Position));
     }
-
     public void OnPointerReleased(CanvasPointerContext context)
     {
         if (!_isDrawing)
@@ -32,9 +32,9 @@ public sealed class LineTool : ICanvasTool
         _isDrawing = false;
         //context.ViewModel.ClearPreview();
         context.ViewModel.AddShape(
-            ToDrawingPoint(_start),
-            ToDrawingPoint(context.Position));
+            new Line(
+            CoordinateConverter.ToDrawingPoint(_start),
+            CoordinateConverter.ToDrawingPoint(context.Position)
+            ));
     }
-
-    private static System.Drawing.Point ToDrawingPoint(Point p) => new System.Drawing.Point((int)p.X, (int)p.Y);
 }
