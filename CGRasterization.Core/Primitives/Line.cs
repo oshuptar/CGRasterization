@@ -8,17 +8,18 @@ namespace CGRasterization.Core.Primitives;
 public class Line : IShape
 {
     public Point Start { get; set; }
-    public Point End { get; set; }
+    public  Point End { get; set; }
     public int Thickness { get; set; }
-    public Color Color { get; set; } = Color.Black;
+    public Color Color { get; set; }
     public int Dx => End.X - Start.X;
     public int Dy => End.Y - Start.Y;
     public double? Slope => Dx == 0 ? null : Dy / Dx;
 
-    public Line(Point startPoint, Point endPoint, int  thickness = 1)
+    public Line(Point startPoint, Point endPoint, Color color, int thickness)
     {
         Start = startPoint;
         End = endPoint;
+        Color = color;
         Thickness = thickness;
     }
     public void RasterizeWith(IShapeRasterizer rasterizer, PixelBuffer buffer) =>

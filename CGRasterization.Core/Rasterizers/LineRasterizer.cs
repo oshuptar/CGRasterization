@@ -19,7 +19,7 @@ public class LineRasterizer : BaseRasterizer, IRasterizer<Line>
             int sy = y0 < y1 ? 1 : -1;
             int x = x0;
             int y = y0;
-            Brush.Brush brush = new Brush.Brush(shape.Thickness, shape.Color);
+            Brush.Brush brush = new Brush.Brush(shape.Color, shape.Thickness);
             PutPixel(x, y, brush, buffer);
             if (dx >= dy)
             {

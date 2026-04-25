@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Avalonia;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CGRasterization.App.Buffers;
@@ -12,12 +13,40 @@ using CGRasterization.Core.Buffers.Enums;
 using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers;
 using CGRasterization.Core.Rasterizers.Abstractions;
+using Brush = CGRasterization.Core.Brush.Brush;
+using Color = System.Drawing.Color;
 
 namespace CGRasterization.App.Canvas;
 
 public class Canvas : INotifyPropertyChanged
 {
     private readonly IShapeRasterizer _shapeRasterizer = new ShapeRasterizer();
+    public Brush Brush { get; set; }
+    public int BrushThickness
+    {
+        get;
+        set
+        {
+            int normalized = value % 2 == 0 ? value + 1 : value;
+            if (field == normalized) return;
+            field = normalized;
+            Brush.Thickness = normalized;
+            OnPropertyChanged();
+        }
+    } = 1;
+
+    public Avalonia.Media.Color BrushColorPicker
+    {
+        get;
+        set
+        {
+            field = value;
+            Brush.Color = Color.FromArgb(value.A, value.R, value.G, value.B);
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(BrushColorName)); 
+        }
+    } = Colors.Black;
+    public string BrushColorName => BrushColorPicker.ToString();
     private DirectBitmap Bitmap { get; set; }
     public WriteableBitmap? ImageSource
     {
@@ -43,6 +72,7 @@ public class Canvas : INotifyPropertyChanged
             bytes[i + 2] = 255;
             bytes[i + 3] = 255; 
         }
+        Brush = new(Color.FromArgb(BrushColorPicker.A, BrushColorPicker.R, BrushColorPicker.G, BrushColorPicker.B) , BrushThickness);
         Bitmap = new DirectBitmap(width, height, new Vector(96, 96), PixelFormat.Rgba8888, bytes);
         Bitmap.UpdateBitmap();
         ImageSource = Bitmap.Bitmap;
@@ -90,6 +120,7 @@ public class Canvas : INotifyPropertyChanged
             Bitmap.Pixels,
             Bitmap.Stride,
             Bitmap.PixelFormat == PixelFormats.Gray8 ? ColorFormat.Grayscale : ColorFormat.Rgba);
+
     private void DrawShape(IShape shape, PixelBuffer buffer) => shape.RasterizeWith(_shapeRasterizer, buffer);
     private void InvalidateImage()
     {

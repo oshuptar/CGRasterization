@@ -10,17 +10,18 @@ public class Circle : IShape
     public int Radius { get; set; }
     public Point  Center { get; set; }
     public int Thickness { get; set; }
-    public Color Color { get; set; } = Color.Black;
+    public Color Color { get; set; }
     public Circle(Point center, int radius)
     {
         Radius = radius;
         Center = center;
     }
     
-    public Circle(Point center, Point onCircle, int thickness = 1)
+    public Circle(Point center, Point onCircle, Color color, int thickness)
     {
         Center = center;
         Radius = (int)Math.Sqrt((Math.Pow(Math.Abs(onCircle.X - center.X), 2) + Math.Pow(Math.Abs(onCircle.Y - center.Y), 2)));
+        Color = color;
         Thickness = thickness;
     }
     public void RasterizeWith(IShapeRasterizer rasterizer, PixelBuffer buffer) => rasterizer.Rasterize(this, buffer);

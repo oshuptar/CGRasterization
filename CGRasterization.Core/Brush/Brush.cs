@@ -8,11 +8,12 @@ public class Brush
     public byte[] Pattern { get; set; }
     public Color  Color { get; set; }
     public int Stride { get; set; }
-    public Brush(int thickness, Color color)
+    public Brush(Color color, int thickness)
     {
         if (thickness < 1)
             throw new ArgumentOutOfRangeException(nameof(thickness));
 
+        Color = color;
         Thickness = thickness % 2 == 0 ? thickness - 1 : thickness;
         int stride = Thickness * 4;
         Stride = stride;

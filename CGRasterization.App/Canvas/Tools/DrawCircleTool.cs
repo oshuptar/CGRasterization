@@ -31,7 +31,9 @@ public sealed class DrawCircleTool : ICanvasTool
         context.ViewModel.AddShape(
             new Circle(
                 CoordinateConverter.ToDrawingPoint(_center),
-                CoordinateConverter.ToDrawingPoint(context.Position)
+                CoordinateConverter.ToDrawingPoint(context.Position),
+                context.ViewModel.Canvas.Brush.Color,
+                context.ViewModel.Canvas.Brush.Thickness
                 ));
     }
 }

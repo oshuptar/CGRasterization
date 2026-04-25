@@ -13,7 +13,7 @@ public class CircleRasterizer : BaseRasterizer, IRasterizer<Circle>
         int x = 0;
         int y = shape.Radius;
         int d = 1 - shape.Radius; int dE = 3; int dSE = 5 - 2 * shape.Radius;
-        Brush.Brush brush = new Brush.Brush(shape.Thickness, shape.Color);
+        Brush.Brush brush = new Brush.Brush(shape.Color, shape.Thickness);
         PutSymmetricPoints(shape, x, y, brush, buffer);
         while (x < y)
         {
