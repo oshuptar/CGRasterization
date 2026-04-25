@@ -46,7 +46,7 @@ public class Line : IShape
         double distanceToLine = Math.Sqrt(Math.Pow(qx - point.X, 2) + Math.Pow(qy - point.Y, 2));
         return Math.Max(distanceToLine - thicknessRadius, 0);
     }
-    public override string ToString() => $"Line: Start=({Start.X}, {Start.Y})\nEnd=({End.X}, {End.Y})\nDirection=({Dx}, {Dy})\nThickness={Thickness}\nColor={Color}";
+    public override string ToString() => $"Line: Start=({Start.X}, {Start.Y})\nEnd=({End.X}, {End.Y})\nDirection=({Dx}, {Dy})";
     public void MoveBy(int dx, int dy)
     {
         Start = new Point(Start.X + dx, Start.Y + dy);

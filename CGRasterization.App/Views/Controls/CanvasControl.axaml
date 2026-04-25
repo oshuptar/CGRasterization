@@ -60,15 +60,25 @@
                 <StackPanel Spacing="6">
                     <TextBlock Text="Selected shape"
                                FontWeight="SemiBold"/>
-                    <Border Background="#F7F7F7"
-                            BorderBrush="#E0E0E0"
-                            BorderThickness="1"
-                            CornerRadius="6"
-                            Padding="8"
-                            MinHeight="70">
-                        <TextBlock Text="{Binding SelectedShape}"
-                                   TextWrapping="Wrap"/>
-                    </Border>
+                        <StackPanel Orientation="Vertical" Spacing="6" 
+                                    Opacity="{Binding SelectedShapeControlsOpacity}">
+                            <TextBlock Text="{Binding SelectedShape}"
+                                       TextWrapping="Wrap"/>
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Thickness"/>
+                                <NumericUpDown Minimum="1"
+                                               Maximum="15"
+                                               Increment="2"
+                                               Value="{Binding SelectedShapeThickness}" />
+                            </StackPanel>
+                            <StackPanel Spacing="4"
+                                        Orientation="Vertical"
+                                        HorizontalAlignment="Left">
+                                <TextBlock Text="Color"/>
+                                <ColorPicker Color="{Binding SelectedShapeBrushColorPicker, Mode=TwoWay}"
+                                             VerticalAlignment="Top"/>
+                            </StackPanel>
+                        </StackPanel>
                 </StackPanel>
 
                 <StackPanel Spacing="8"

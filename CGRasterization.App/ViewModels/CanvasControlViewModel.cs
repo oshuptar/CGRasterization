@@ -1,26 +1,61 @@
 using System;
 using System.Collections.Generic;
+using Avalonia.Media;
 using CGRasterization.App.Canvas.Enums;
 using CGRasterization.App.Canvas.Tools;
 using CGRasterization.App.Canvas.Tools.Abstractions;
 using CGRasterization.App.ViewModels.Abstractions;
 using CGRasterization.Core.Primitives.Abstractions;
 using CommunityToolkit.Mvvm.Input;
+using Color = System.Drawing.Color;
 
 namespace CGRasterization.App.ViewModels;
 
 public class CanvasControlViewModel : ViewModelBase
 {
     public Canvas.Canvas Canvas { get; set; } = new(1200, 800);
-
+    public Avalonia.Media.Color SelectedShapeBrushColorPicker
+    {
+        get;
+        set
+        {
+            field = value;
+            if (SelectedShape != null)
+            {
+                SelectedShape.Color = Color.FromArgb(value.A, value.R, value.G, value.B);
+                Canvas.RedrawShapes(); // TODO: modify to redraw only specific shape
+            }
+            OnPropertyChanged();
+        }
+    }
+    public int SelectedShapeThickness
+    {
+        get;
+        set
+        {
+            int normalized = value % 2 == 0 ? value + 1 : value;
+            if (field == normalized) return;
+            field = normalized;
+            if (SelectedShape != null)
+            {
+                SelectedShape.Thickness = field;
+                Canvas.RedrawShapes(); // TODO: modify to redraw only specific shape
+            }
+            OnPropertyChanged();
+        }
+    }
     public IShape? SelectedShape
     {
         get => field;
         set
         {
             if (field == value) return;
-
             field = value;
+            if (field != null)
+            {
+                SelectedShapeBrushColorPicker = Avalonia.Media.Color.FromArgb(field.Color.A,field.Color.R,field.Color.G,field.Color.B);
+                SelectedShapeThickness = field.Thickness;
+            }
             RefreshSelected();
         }
     }
