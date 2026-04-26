@@ -4,6 +4,7 @@ using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers.Abstractions;
 using CGRasterization.Core.ShapeHandles;
 using CGRasterization.Core.ShapeHandles.Asbtractions;
+using CGRasterization.Core.Utilities;
 
 namespace CGRasterization.Core.Primitives;
 
@@ -45,7 +46,7 @@ public class Polygon : IShape
                 vertex.Y + dy);
         }
     }
-    private IEnumerable<IShapeHandle> GetHandles()
+    private IEnumerable<IShapeHandle> GetVertexHandles()
     {
         for (int i = 0; i < Vertices.Count; i++)
         {
@@ -55,18 +56,59 @@ public class Polygon : IShape
                 setPosition: point => Vertices[index] = point);
         }
     }
+    private IEnumerable<(int StartIndex, int EndIndex, Point Start, Point End)> GetEdges()
+    {
+        if (!IsClosed || Vertices.Count < 2) yield break;
+        for (int i = 0; i < Vertices.Count; i++)
+        {
+            int startIndex = i;
+            int endIndex = (i + 1) % Vertices.Count;
+            yield return (startIndex, endIndex,
+                Vertices[startIndex],
+                Vertices[endIndex]);
+        }
+    }
+    
     public IShapeHandle? GetHandle(Point point, double tolerance)
     {
-        return GetHandles()
+        IShapeHandle? vertexHandle = GetVertexHandles()
             .Select(handle => new
             {
                 Handle = handle,
-                Distance = Math.Sqrt(Math.Pow(point.X - handle.Position.X, 2) + Math.Pow(point.Y - handle.Position.Y, 2))
+                Distance = GeometryUtilities.Distance(point, handle.Position)
             })
             .Where(x => x.Distance <= tolerance)
             .OrderBy(x => x.Distance)
             .Select(x => x.Handle)
             .FirstOrDefault();
+        
+        if (vertexHandle is not null) return vertexHandle;
+        return GetEdges()
+            .Select(edge => new
+            {
+                Edge = edge,
+                Distance = GeometryUtilities.DistanceToSegment(point, edge.Start, edge.End)
+            })
+            .Where(x => x.Distance <= tolerance)
+            .OrderBy(x => x.Distance)
+            .Select(x => CreateEdgeDragHandle(x.Edge.StartIndex, x.Edge.EndIndex, point))
+            .FirstOrDefault();
+    }
+    private IShapeHandle CreateEdgeDragHandle(int startIndex, int endIndex, Point grabbedPoint)
+    {
+        Point handlePosition = grabbedPoint;
+        return new ShapeHandle(
+            getPosition: () => handlePosition,
+            setPosition: newPosition =>
+            {
+                int dx = newPosition.X - handlePosition.X;
+                int dy = newPosition.Y - handlePosition.Y;
+                Point a = Vertices[startIndex];
+                Point b = Vertices[endIndex];
+                Vertices[startIndex] = new Point(a.X + dx, a.Y + dy);
+                Vertices[endIndex] = new Point(b.X + dx, b.Y + dy);
+                handlePosition = newPosition;
+            });
     }
     public void MoveHandle(IShapeHandle handle, int dx, int dy) => handle.MoveBy(dx, dy);
     public override string ToString() => $"Polygon: Vertices=[{String.Join(", ", Vertices.Select(vertex => $"({vertex.X}, {vertex.Y})"))}]";

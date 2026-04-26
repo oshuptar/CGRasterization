@@ -4,6 +4,7 @@ using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers.Abstractions;
 using CGRasterization.Core.ShapeHandles;
 using CGRasterization.Core.ShapeHandles.Asbtractions;
+using CGRasterization.Core.Utilities;
 
 namespace CGRasterization.Core.Primitives;
 
@@ -32,7 +33,7 @@ public class Circle : IShape
         int thicknessRadius = Thickness / 2;
         double dx = point.X - Center.X;
         double dy = point.Y - Center.Y;
-        double distanceFromCenter = Math.Sqrt(dx * dx + dy * dy);
+        double distanceFromCenter = GeometryUtilities.Distance(point, Center);
         double distanceToCircleLine = Math.Abs(distanceFromCenter - Radius);
         return Math.Max(0, distanceToCircleLine - thicknessRadius);
     }
@@ -42,9 +43,7 @@ public class Circle : IShape
     
     public IShapeHandle? GetHandle(Point point, double tolerance)
     {
-        double dx = point.X - Center.X;
-        double dy = point.Y - Center.Y;
-        double distanceFromCenter = Math.Sqrt(dx * dx + dy * dy);
+        double distanceFromCenter = GeometryUtilities.Distance(point, Center);
         double distanceToCircle = Math.Abs(distanceFromCenter - Radius);
         if (distanceToCircle > tolerance) return null;
         Point handlePosition = point;
@@ -53,9 +52,7 @@ public class Circle : IShape
             setPosition: newPosition =>
             {
                 handlePosition = newPosition;
-                double newDx = newPosition.X - Center.X;
-                double newDy = newPosition.Y - Center.Y;
-                Radius = (int)Math.Round(Math.Sqrt(newDx * newDx + newDy * newDy));
+                Radius = (int) GeometryUtilities.Distance(newPosition, Center);
             });
     }
     public void MoveHandle(IShapeHandle handle, int dx, int dy) => handle.MoveBy(dx, dy);
