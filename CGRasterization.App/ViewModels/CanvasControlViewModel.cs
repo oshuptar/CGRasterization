@@ -74,10 +74,12 @@ public class CanvasControlViewModel : ViewModelBase
     public bool IsSelectShapeMode => SelectedToolType == CanvasToolType.SelectShape;
     public bool IsDrawLineMode => SelectedToolType == CanvasToolType.DrawLine;
     public bool IsDrawCircleMode => SelectedToolType == CanvasToolType.DrawCircle;
+    public bool IsDrawPolygonMode => SelectedToolType == CanvasToolType.DrawPolygon;
     public bool IsMoveShapeMode => SelectedToolType == CanvasToolType.MoveShape;
     public bool IsEditShapeMode => SelectedToolType == CanvasToolType.EditShape;
     public RelayCommand SetLineDrawToolCommand { get; }
     public RelayCommand SetCircleDrawToolCommand { get; }
+    public RelayCommand SetPolygonDrawToolCommand { get; }
     public RelayCommand SetSelectShapeToolCommand { get; }
     public RelayCommand RemoveShapeCommand { get; }
     public RelayCommand MoveShapeCommand { get; }
@@ -104,6 +106,11 @@ public class CanvasControlViewModel : ViewModelBase
             SetToolMode(CanvasToolType.DrawCircle);
             ResetSelection();
         }, () => true);
+        SetPolygonDrawToolCommand = new RelayCommand(() =>
+        {
+            SetToolMode(CanvasToolType.DrawPolygon);
+            ResetSelection();
+        }, () => true);
         SetSelectShapeToolCommand = new RelayCommand(() =>
         {
             SetToolMode(CanvasToolType.SelectShape);
@@ -122,11 +129,16 @@ public class CanvasControlViewModel : ViewModelBase
             [CanvasToolType.DrawCircle] = new DrawCircleTool(),
             [CanvasToolType.SelectShape] = new SelectShapeTool(),
             [CanvasToolType.MoveShape] = new MoveShapeTool(),
-            [CanvasToolType.EditShape] = new EditShapeTool()
+            [CanvasToolType.EditShape] = new EditShapeTool(),
+            [CanvasToolType.DrawPolygon] = new DrawPolygonTool(),
         };
         SelectedToolType = CanvasToolType.None;
     }
-    public void SetToolMode(CanvasToolType canvasToolType) => SelectedToolType = canvasToolType;
+    private void SetToolMode(CanvasToolType canvasToolType){ 
+        CurrentTool?.Cancel();
+        Canvas.SetPreviewShape(null);
+        SelectedToolType = canvasToolType;
+    }
     public void AddShape(IShape? shape)  {
         Console.WriteLine("Adding shape " + shape);
         if(shape is not null)
@@ -139,7 +151,6 @@ public class CanvasControlViewModel : ViewModelBase
         if (shape is not null)
             Canvas.Shapes.Remove(shape);
         ResetSelection();
-        ResetToolMode();
     }
     private void ResetSelection() => SelectedShape = null;
 
@@ -147,6 +158,7 @@ public class CanvasControlViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(IsDrawCircleMode));
         OnPropertyChanged(nameof(IsDrawLineMode));
+        OnPropertyChanged(nameof(IsDrawPolygonMode));
         OnPropertyChanged(nameof(IsSelectShapeMode));
         OnPropertyChanged(nameof(IsMoveShapeMode));
         OnPropertyChanged(nameof(IsEditShapeMode));
@@ -156,11 +168,5 @@ public class CanvasControlViewModel : ViewModelBase
         OnPropertyChanged(nameof(SelectedShape));
         OnPropertyChanged(nameof(IsSelectedShape));
         OnPropertyChanged(nameof(SelectedShapeControlsOpacity));
-    }
-
-    public void ResetToolMode()
-    {
-        SetToolMode(CanvasToolType.None);
-        ResetSelection();
     }
 }

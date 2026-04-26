@@ -56,4 +56,11 @@ public class EditShapeTool : ICanvasTool
         const double decay = 4.0;
         return baseTolerance * Math.Exp(-thicknessRadius / decay);
     }
+
+    public void Cancel()
+    {
+        _editingShape = null;
+        _activeHandle = null;
+        _isEditing = false;
+    }
 }

@@ -29,10 +29,10 @@ public class SelectShapeTool : ICanvasTool
     }
 
     public void OnPointerMoved(CanvasPointerContext context)
-    {
-    }
+    { }
 
     public void OnPointerReleased(CanvasPointerContext context)
-    {
-    }
+    { }
+    public void Cancel()
+    { }
 }

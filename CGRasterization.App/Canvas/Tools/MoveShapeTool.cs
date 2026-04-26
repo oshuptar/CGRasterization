@@ -35,9 +35,16 @@ public class MoveShapeTool : ICanvasTool
     }
     public void OnPointerReleased(CanvasPointerContext context)
     {
+        if(!_isMoving || _movingShape is null) return;
         _isMoving = false;
         _movingShape = null;
         context.Pointer.Capture(null);
         context.ViewModel.SelectedToolType = CanvasToolType.SelectShape;
+    }
+
+    public void Cancel()
+    {
+        _movingShape = null;
+        _isMoving = false;
     }
 }

@@ -62,6 +62,7 @@ public class Canvas : INotifyPropertyChanged
     public int Width => Bitmap.Width;
     public int Height => Bitmap.Height;
     public ObservableCollection<IShape> Shapes { get; } = new();
+    public IShape? PreviewShape { get; set; }
     public Canvas(int width, int height)
     {
         byte[] bytes = new byte[width * height * 4];
@@ -78,15 +79,20 @@ public class Canvas : INotifyPropertyChanged
         ImageSource = Bitmap.Bitmap;
         Shapes.CollectionChanged += OnCollectionChanged;
     }
+    public void SetPreviewShape(IShape? shape)
+    {
+        PreviewShape = shape;
+        RedrawShapes();
+    }
     public void RedrawShapes()
     {
         Console.WriteLine("Redrawing Shapes");
         PixelBuffer buffer = GetPixelBuffer();
         Clear();
         foreach (IShape shape in Shapes)
-        {
             DrawShape(shape, buffer);
-        }
+        if(PreviewShape is not null)
+            DrawShape(PreviewShape, buffer);
         Bitmap.UpdateBitmap();
         InvalidateImage();
     }

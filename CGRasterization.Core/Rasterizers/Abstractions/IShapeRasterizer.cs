@@ -7,4 +7,5 @@ public interface IShapeRasterizer
 {
     void Rasterize(Line line, PixelBuffer buffer);
     void Rasterize(Circle circle, PixelBuffer buffer);
+    void Rasterize(Polygon polygon, PixelBuffer buffer);
 }

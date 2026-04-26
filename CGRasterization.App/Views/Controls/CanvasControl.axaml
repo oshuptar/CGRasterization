@@ -43,6 +43,10 @@
                              GroupName="ShapeTypes"
                              IsChecked="{Binding IsDrawCircleMode}"
                              Command="{Binding SetCircleDrawToolCommand}" />
+                <RadioButton Content="Polygon"
+                             GroupName="ShapeTypes"
+                             IsChecked="{Binding IsDrawPolygonMode}"
+                             Command="{Binding SetPolygonDrawToolCommand}" />
             </StackPanel>
         </Border>
         

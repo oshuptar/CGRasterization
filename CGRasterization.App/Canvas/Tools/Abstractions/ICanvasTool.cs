@@ -2,7 +2,8 @@ namespace CGRasterization.App.Canvas.Tools.Abstractions;
 
 public interface ICanvasTool
 { 
-    void OnPointerPressed(CanvasPointerContext context);
-    void OnPointerMoved(CanvasPointerContext context);
-    void OnPointerReleased(CanvasPointerContext context);
+    public void OnPointerPressed(CanvasPointerContext context);
+    public void OnPointerMoved(CanvasPointerContext context);
+    public void OnPointerReleased(CanvasPointerContext context);
+    public void Cancel();
 }

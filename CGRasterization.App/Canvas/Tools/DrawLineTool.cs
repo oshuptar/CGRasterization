@@ -7,7 +7,7 @@ namespace CGRasterization.App.Canvas.Tools;
 
 public sealed class DrawLineTool : ICanvasTool
 {
-    private Point _start;
+    private Point? _start;
     private bool _isDrawing;
 
     public void OnPointerPressed(CanvasPointerContext context)
@@ -18,26 +18,24 @@ public sealed class DrawLineTool : ICanvasTool
     }
     public void OnPointerMoved(CanvasPointerContext context)
     {
-        if (!_isDrawing)
-            return;
-        
-        // context.ViewModel.SetPreviewLine(
-        //     ToDrawingPoint(_start),
-        //     ToDrawingPoint(context.Position));
+        if (!_isDrawing) return;
     }
     public void OnPointerReleased(CanvasPointerContext context)
     {
-        if (!_isDrawing)
-            return;
+        if (!_isDrawing || _start == null) return;
         context.Pointer.Capture(null);
         _isDrawing = false;
-        //context.ViewModel.ClearPreview();
         context.ViewModel.AddShape(
             new Line(
-            CoordinateConverter.ToDrawingPoint(_start),
+            CoordinateConverter.ToDrawingPoint(_start.Value),
             CoordinateConverter.ToDrawingPoint(context.Position),
             context.ViewModel.Canvas.Brush.Color,
             context.ViewModel.Canvas.Brush.Thickness
             ));
+    }
+    public void Cancel()
+    {
+       _isDrawing = false;
+       _start = null;
     }
 }
