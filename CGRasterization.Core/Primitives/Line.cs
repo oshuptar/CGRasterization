@@ -10,7 +10,7 @@ namespace CGRasterization.Core.Primitives;
 public class Line : IShape
 {
     public Point Start { get; set; }
-    public  Point End { get; set; }
+    public Point End { get; set; }
     public int Thickness { get; set; }
     public Color Color { get; set; }
     public int Dx => End.X - Start.X;
