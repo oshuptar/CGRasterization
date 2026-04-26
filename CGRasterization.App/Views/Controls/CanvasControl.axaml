@@ -88,6 +88,9 @@
                     <ToggleButton Content="Move selected shape"
                                   IsChecked="{Binding IsMoveShapeMode}"
                                   Command="{Binding MoveShapeCommand}"/>
+                    <ToggleButton Content="Edit selected shape"
+                                  IsChecked="{Binding IsEditShapeMode}"
+                                  Command="{Binding EditShapeCommand}"/>
                     <Button Content="Remove selected shape"
                             Command="{Binding RemoveShapeCommand}" />
                 </StackPanel>

@@ -2,6 +2,8 @@ using System.Drawing;
 using CGRasterization.Core.Buffers;
 using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers.Abstractions;
+using CGRasterization.Core.ShapeHandles;
+using CGRasterization.Core.ShapeHandles.Asbtractions;
 
 namespace CGRasterization.Core.Primitives;
 
@@ -52,4 +54,27 @@ public class Line : IShape
         Start = new Point(Start.X + dx, Start.Y + dy);
         End = new Point(End.X + dx, End.Y + dy);
     }
+    private IEnumerable<IShapeHandle> GetHandles()
+    {
+        yield return new ShapeHandle(
+                getPosition: () => Start,
+                setPosition: point => Start = point);
+        yield return new ShapeHandle(
+                getPosition: () => End,
+                setPosition: point => End = point); 
+    }
+    public IShapeHandle? GetHandle(Point point, double tolerance)
+    {
+        return GetHandles()
+            .Select(handle => new
+            {
+                Handle = handle,
+                Distance = Math.Sqrt(Math.Pow(point.X - handle.Position.X, 2) + Math.Pow(point.Y - handle.Position.Y, 2))
+            })
+            .Where(x => x.Distance <= tolerance)
+            .OrderBy(x => x.Distance)
+            .Select(x => x.Handle)
+            .FirstOrDefault();
+    }
+    public void MoveHandle(IShapeHandle handle, int dx, int dy) => handle.MoveBy(dx, dy);
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Avalonia.Media;
 using CGRasterization.App.Canvas.Enums;
 using CGRasterization.App.Canvas.Tools;
 using CGRasterization.App.Canvas.Tools.Abstractions;
@@ -76,11 +75,13 @@ public class CanvasControlViewModel : ViewModelBase
     public bool IsDrawLineMode => SelectedToolType == CanvasToolType.DrawLine;
     public bool IsDrawCircleMode => SelectedToolType == CanvasToolType.DrawCircle;
     public bool IsMoveShapeMode => SelectedToolType == CanvasToolType.MoveShape;
+    public bool IsEditShapeMode => SelectedToolType == CanvasToolType.EditShape;
     public RelayCommand SetLineDrawToolCommand { get; }
     public RelayCommand SetCircleDrawToolCommand { get; }
     public RelayCommand SetSelectShapeToolCommand { get; }
     public RelayCommand RemoveShapeCommand { get; }
     public RelayCommand MoveShapeCommand { get; }
+    public RelayCommand EditShapeCommand { get; }
     private readonly Dictionary<CanvasToolType, ICanvasTool> _tools;
     public ICanvasTool? CurrentTool
     {
@@ -114,12 +115,14 @@ public class CanvasControlViewModel : ViewModelBase
             ResetSelection();
         }, () => true);
         MoveShapeCommand = new RelayCommand(() => SetToolMode(CanvasToolType.MoveShape), () => true);
+        EditShapeCommand = new RelayCommand(() => SetToolMode(CanvasToolType.EditShape), () => true);
         _tools = new Dictionary<CanvasToolType, ICanvasTool>
         {
             [CanvasToolType.DrawLine] = new DrawLineTool(),
             [CanvasToolType.DrawCircle] = new DrawCircleTool(),
             [CanvasToolType.SelectShape] = new SelectShapeTool(),
-            [CanvasToolType.MoveShape] = new MoveShapeTool()
+            [CanvasToolType.MoveShape] = new MoveShapeTool(),
+            [CanvasToolType.EditShape] = new EditShapeTool()
         };
         SelectedToolType = CanvasToolType.None;
     }
@@ -146,6 +149,7 @@ public class CanvasControlViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsDrawLineMode));
         OnPropertyChanged(nameof(IsSelectShapeMode));
         OnPropertyChanged(nameof(IsMoveShapeMode));
+        OnPropertyChanged(nameof(IsEditShapeMode));
     }
     public void RefreshSelected()
     {
