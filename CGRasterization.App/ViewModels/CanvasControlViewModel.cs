@@ -144,7 +144,8 @@ public class CanvasControlViewModel : ViewModelBase
     public async Task SaveCanvasAsync() => await _canvasPersistenceService.SaveAsync(Canvas, "canvas.json");
     public async Task LoadCanvasAsync()
     {
-        CanvasDto dto = await _canvasPersistenceService.LoadAsync("canvas.json");
+        CanvasDto? dto = await _canvasPersistenceService.LoadAsync("canvas.json");
+        if (dto is null) return;
         List<IShape> shapes = dto.FromDto();
         Canvas.ReplaceShapes(shapes);
         ResetSelection();
@@ -182,5 +183,11 @@ public class CanvasControlViewModel : ViewModelBase
         OnPropertyChanged(nameof(SelectedShape));
         OnPropertyChanged(nameof(IsSelectedShape));
         OnPropertyChanged(nameof(SelectedShapeControlsOpacity));
+    }
+
+    public void ClearCanvas()
+    {
+        Canvas.ClearCanvas();
+        ResetSelection();
     }
 }

@@ -47,6 +47,8 @@
                              GroupName="ShapeTypes"
                              IsChecked="{Binding IsDrawPolygonMode}"
                              Command="{Binding SetPolygonDrawToolCommand}" />
+                <CheckBox Content="Anti-aliasing"
+                          IsChecked="{Binding Canvas.AntiAliasingEnabled, Mode=TwoWay}" />
             </StackPanel>
         </Border>
         

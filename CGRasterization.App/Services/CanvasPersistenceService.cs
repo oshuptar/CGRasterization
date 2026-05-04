@@ -17,16 +17,32 @@ public sealed class CanvasPersistenceService : ICanvasPersistenceService
     };
     public async Task SaveAsync(Canvas.Canvas canvas, string filePath)
     {
-        CanvasDto dto = canvas.ToDto();
-        string json = JsonSerializer.Serialize(dto, _options);
-        await File.WriteAllTextAsync(filePath, json);
+        try
+        {
+            CanvasDto dto = canvas.ToDto();
+            string json = JsonSerializer.Serialize(dto, _options);
+            await File.WriteAllTextAsync(filePath, json);
+        }catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
 
-    public async Task<CanvasDto> LoadAsync(string filePath)
+    public async Task<CanvasDto?> LoadAsync(string filePath)
     {
-        string json = await File.ReadAllTextAsync(filePath);
-        CanvasDto? dto = JsonSerializer.Deserialize<CanvasDto>(json, _options);
-        if (dto is null) throw new InvalidOperationException("Could not deserialize canvas file.");
-        return dto;
+        try
+        {
+            if (!File.Exists(filePath)) throw new FileNotFoundException($"File {filePath} not found");
+            
+            string json = await File.ReadAllTextAsync(filePath);
+            CanvasDto? dto = JsonSerializer.Deserialize<CanvasDto>(json, _options);
+            if (dto is null) throw new InvalidOperationException("Could not deserialize canvas file.");
+            return dto;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+            return null;
+        }
     }
 }

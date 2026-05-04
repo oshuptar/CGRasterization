@@ -13,15 +13,13 @@ using CGRasterization.Core.Buffers;
 using CGRasterization.Core.Buffers.Enums;
 using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers;
-using CGRasterization.Core.Rasterizers.Abstractions;
-using Brush = CGRasterization.Core.Brush.Brush;
 using Color = System.Drawing.Color;
 
 namespace CGRasterization.App.Canvas;
 
 public class Canvas : INotifyPropertyChanged
 {
-    private readonly IShapeRasterizer _shapeRasterizer = new ShapeRasterizer();
+    private readonly ShapeRasterizer _shapeRasterizer = new();
     public int BrushThickness
     {
         get;
@@ -63,6 +61,18 @@ public class Canvas : INotifyPropertyChanged
     public int Height => Bitmap.Height;
     public ObservableCollection<IShape> Shapes { get; } = new();
     public IShape? PreviewShape { get; set; }
+    public bool AntiAliasingEnabled
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+            _shapeRasterizer.LineRasterizationMode = value ? LineRasterizationMode.GuptaSproull : LineRasterizationMode.Bresenham;
+            RedrawShapes();
+            OnPropertyChanged();
+        }
+    }
     public Canvas(int width, int height)
     {
         byte[] bytes = new byte[width * height * 4];
@@ -160,6 +170,7 @@ public class Canvas : INotifyPropertyChanged
     {
         Clear();
         Shapes.Clear();
+        SetPreviewShape(null);
         Bitmap.UpdateBitmap();
         InvalidateImage();
     }
