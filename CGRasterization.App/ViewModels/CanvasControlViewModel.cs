@@ -24,11 +24,12 @@ public class CanvasControlViewModel : ViewModelBase
         get;
         set
         {
+            if (field == value) return;
             field = value;
             if (SelectedShape != null)
             {
                 SelectedShape.Color = Color.FromArgb(value.A, value.R, value.G, value.B);
-                Canvas.RedrawShapes(); // TODO: modify to redraw only specific shape
+                Canvas.RedrawShapes();
             }
             OnPropertyChanged();
         }
@@ -38,13 +39,13 @@ public class CanvasControlViewModel : ViewModelBase
         get;
         set
         {
-            int normalized = value % 2 == 0 ? value + 1 : value;
-            if (field == normalized) return;
-            field = normalized;
+            int val = Math.Max(1, value);
+            if (field == val) return;
+            field = val;
             if (SelectedShape != null)
             {
-                SelectedShape.Thickness = field;
-                Canvas.RedrawShapes(); // TODO: modify to redraw only specific shape
+                SelectedShape.Thickness = val;
+                Canvas.RedrawShapes();
             }
             OnPropertyChanged();
         }

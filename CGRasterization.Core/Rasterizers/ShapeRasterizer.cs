@@ -6,7 +6,7 @@ namespace CGRasterization.Core.Rasterizers;
 
 public sealed class ShapeRasterizer : IShapeRasterizer
 {
-    private readonly IRasterizer<Line> _lineRasterizer = new LineRasterizer();
+    private readonly IRasterizer<Line> _lineRasterizer = new LineRasterizer.BresenhamRasterizer();
     private readonly IRasterizer<Circle> _circleRasterizer= new CircleRasterizer();
     private readonly IRasterizer<Polygon> _polygonRasterizer= new PolygonRasterizer();
     public void Rasterize(Circle circle, PixelBuffer buffer) => _circleRasterizer.Rasterize(circle, buffer);

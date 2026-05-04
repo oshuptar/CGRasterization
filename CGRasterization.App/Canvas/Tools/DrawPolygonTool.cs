@@ -37,7 +37,7 @@ public class DrawPolygonTool : ICanvasTool
         _isDragging = false;
         context.Pointer.Capture(null);
         Point releasedPoint = CoordinateConverter.ToDrawingPoint(context.Position);
-        if (_points.Count >= 3 && IsNear(releasedPoint, _points[0], GetSelectionTolerance(context.ViewModel.Canvas.Brush)))
+        if (_points.Count >= 3 && IsNear(releasedPoint, _points[0], GetSelectionTolerance(Brush.NormalizeThickness(context.ViewModel.Canvas.BrushThickness))))
         {
             ClosePolygon(context);
             return;
@@ -61,15 +61,15 @@ public class DrawPolygonTool : ICanvasTool
         context.ViewModel.Canvas.SetPreviewShape(new Polygon(
                 points,
                 isClosed,
-                context.ViewModel.Canvas.Brush.Color,
-                context.ViewModel.Canvas.Brush.Thickness));
+                context.ViewModel.Canvas.BrushColor,
+                context.ViewModel.Canvas.BrushThickness));
     }
 
     private void ClosePolygon(CanvasPointerContext context)
     {
         if (_points.Count < 3) return;
         var finalVertices = _points.ToList();
-        var polygon = new Polygon(finalVertices, true, context.ViewModel.Canvas.Brush.Color, context.ViewModel.Canvas.Brush.Thickness);
+        var polygon = new Polygon(finalVertices, true, context.ViewModel.Canvas.BrushColor, context.ViewModel.Canvas.BrushThickness);
         _points.Clear();
         _isDragging = false;
         context.ViewModel.Canvas.SetPreviewShape(null);
@@ -83,9 +83,9 @@ public class DrawPolygonTool : ICanvasTool
         return Math.Sqrt(dx * dx + dy * dy) <= tolerance;
     }
 
-    private static double GetSelectionTolerance(Brush brush, double baseTolerance = 20.0)
+    private static double GetSelectionTolerance(int brushThickness, double baseTolerance = 20.0)
     {
-        double thicknessRadius = brush.Thickness / 2.0;
+        double thicknessRadius = brushThickness / 2.0;
         const double decay = 4.0;
         return baseTolerance * Math.Exp(-thicknessRadius / decay);
     }

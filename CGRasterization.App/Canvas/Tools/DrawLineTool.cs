@@ -29,8 +29,8 @@ public sealed class DrawLineTool : ICanvasTool
             new Line(
             CoordinateConverter.ToDrawingPoint(_start.Value),
             CoordinateConverter.ToDrawingPoint(context.Position),
-            context.ViewModel.Canvas.Brush.Color,
-            context.ViewModel.Canvas.Brush.Thickness
+            context.ViewModel.Canvas.BrushColor,
+            context.ViewModel.Canvas.BrushThickness
             ));
     }
     public void Cancel()

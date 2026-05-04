@@ -72,7 +72,7 @@
                                 <TextBlock Text="Thickness"/>
                                 <NumericUpDown Minimum="1"
                                                Maximum="15"
-                                               Increment="2"
+                                               Increment="1"
                                                Value="{Binding SelectedShapeThickness}" />
                             </StackPanel>
                             <StackPanel Spacing="4"
@@ -110,7 +110,7 @@
 
                         <NumericUpDown Minimum="1"
                                        Maximum="15"
-                                       Increment="2"
+                                       Increment="1"
                                        Value="{Binding Canvas.BrushThickness}" />
                     </StackPanel>
 

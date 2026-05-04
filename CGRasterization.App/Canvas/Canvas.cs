@@ -22,31 +22,32 @@ namespace CGRasterization.App.Canvas;
 public class Canvas : INotifyPropertyChanged
 {
     private readonly IShapeRasterizer _shapeRasterizer = new ShapeRasterizer();
-    public Brush Brush { get; set; }
+    
+    // The pattern of this brush is not used, only its properties are used to contruct a brush on rasterization. TODO: refactor
     public int BrushThickness
     {
         get;
         set
         {
-            int normalized = value % 2 == 0 ? value + 1 : value;
-            if (field == normalized) return;
-            field = normalized;
-            Brush.Thickness = normalized;
+            int val = Math.Max(1, value);
+            if (field == val) return;
+            field = val;
             OnPropertyChanged();
         }
     } = 1;
-
     public Avalonia.Media.Color BrushColorPicker
     {
         get;
         set
         {
+            if (field == value) return;
             field = value;
-            Brush.Color = Color.FromArgb(value.A, value.R, value.G, value.B);
             OnPropertyChanged();
+            OnPropertyChanged(nameof(BrushColor));
             OnPropertyChanged(nameof(BrushColorName)); 
         }
     } = Colors.Black;
+    public Color BrushColor => Color.FromArgb(BrushColorPicker.A, BrushColorPicker.R, BrushColorPicker.G, BrushColorPicker.B);
     public string BrushColorName => BrushColorPicker.ToString();
     private DirectBitmap Bitmap { get; set; }
     public WriteableBitmap? ImageSource
@@ -74,7 +75,6 @@ public class Canvas : INotifyPropertyChanged
             bytes[i + 2] = 255;
             bytes[i + 3] = 255; 
         }
-        Brush = new(Color.FromArgb(BrushColorPicker.A, BrushColorPicker.R, BrushColorPicker.G, BrushColorPicker.B) , BrushThickness);
         Bitmap = new DirectBitmap(width, height, new Vector(96, 96), PixelFormat.Rgba8888, bytes);
         Bitmap.UpdateBitmap();
         ImageSource = Bitmap.Bitmap;

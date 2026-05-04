@@ -4,20 +4,13 @@ namespace CGRasterization.Core.Brush;
 
 public class Brush
 {
-    public int Thickness {get; set;}
-    public byte[] Pattern { get; set; }
-    public Color  Color { get; set; }
-    public int Stride { get; set; }
-    public Brush(Color color, int thickness)
+    public int Thickness { get; }
+    public byte[] Pattern { get; }
+    public Color Color { get; }
+    public int Stride { get; }
+    private byte[] BuildPattern()
     {
-        if (thickness < 1)
-            throw new ArgumentOutOfRangeException(nameof(thickness));
-
-        Color = color;
-        Thickness = thickness % 2 == 0 ? thickness - 1 : thickness;
-        int stride = Thickness * 4;
-        Stride = stride;
-        Pattern = new byte[Stride * Thickness];
+        byte[] pattern = new byte[Stride * Thickness];
         int centerX = Thickness / 2;
         int centerY = Thickness / 2;
         int radius = Thickness / 2;
@@ -29,13 +22,26 @@ public class Brush
                 int centeredX = x - centerX;
                 if (centeredX * centeredX + centeredY * centeredY <= radius * radius)
                 {
-                    int index = y * stride + x * 4;
-                    Pattern[index]     = color.R;
-                    Pattern[index + 1] = color.G;
-                    Pattern[index + 2] = color.B;
-                    Pattern[index + 3] = color.A;
+                    int index = y * Stride + x * 4;
+                    pattern[index] = Color.R;
+                    pattern[index + 1] = Color.G;
+                    pattern[index + 2] = Color.B;
+                    pattern[index + 3] = Color.A;
                 }
             }
         }
+        return pattern;
+    }
+    public static int NormalizeThickness(int thickness)
+    {
+        if (thickness < 1) throw new ArgumentOutOfRangeException(nameof(thickness));
+        return thickness % 2 == 0 ? thickness + 1 : thickness;
+    }
+    public Brush(Color color, int thickness)
+    {
+        Color = color;
+        Thickness = NormalizeThickness(thickness);
+        Stride = Thickness * 4;
+        Pattern = BuildPattern();
     }
 }
