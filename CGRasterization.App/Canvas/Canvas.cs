@@ -22,8 +22,6 @@ namespace CGRasterization.App.Canvas;
 public class Canvas : INotifyPropertyChanged
 {
     private readonly IShapeRasterizer _shapeRasterizer = new ShapeRasterizer();
-    
-    // The pattern of this brush is not used, only its properties are used to contruct a brush on rasterization. TODO: refactor
     public int BrushThickness
     {
         get;

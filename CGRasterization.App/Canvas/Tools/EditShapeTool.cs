@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using CGRasterization.App.Canvas.Tools.Abstractions;
 using CGRasterization.App.Converters;
+using CGRasterization.Core.Brush;
 using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.ShapeHandles.Asbtractions;
 
@@ -51,7 +52,7 @@ public class EditShapeTool : ICanvasTool
     
     private static double GetSelectionTolerance(IShape shape)
     {
-        double thicknessRadius = shape.Thickness / 2.0;
+        double thicknessRadius = Brush.NormalizeThickness(shape.Thickness) / 2.0;
         const double baseTolerance = 7.0;
         const double decay = 4.0;
         return baseTolerance * Math.Exp(-thicknessRadius / decay);

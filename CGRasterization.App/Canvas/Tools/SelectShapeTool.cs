@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CGRasterization.App.Canvas.Tools.Abstractions;
 using CGRasterization.App.Converters;
+using CGRasterization.Core.Brush;
 using CGRasterization.Core.Primitives.Abstractions;
 using Point = System.Drawing.Point;
 
@@ -22,7 +23,7 @@ public class SelectShapeTool : ICanvasTool
     }
     private static double GetSelectionTolerance(IShape shape)
     {
-        double thicknessRadius = shape.Thickness / 2.0;
+        double thicknessRadius = Brush.NormalizeThickness(shape.Thickness) / 2.0;
         const double baseTolerance = 7.0;
         const double decay = 4.0;
         return baseTolerance * Math.Exp(-thicknessRadius / decay);
@@ -30,7 +31,6 @@ public class SelectShapeTool : ICanvasTool
 
     public void OnPointerMoved(CanvasPointerContext context)
     { }
-
     public void OnPointerReleased(CanvasPointerContext context)
     { }
     public void Cancel()
