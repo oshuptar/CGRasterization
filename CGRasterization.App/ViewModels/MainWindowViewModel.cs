@@ -14,5 +14,5 @@ public class MainWindowViewModel : ViewModelBase
         ClearBitmapCommand = new RelayCommand(() => CanvasControlViewModel.ClearCanvas());
         SaveCanvasCommand = new AsyncRelayCommand(CanvasControlViewModel.SaveCanvasAsync);
         LoadCanvasCommand = new AsyncRelayCommand(CanvasControlViewModel.LoadCanvasAsync);
-    }
+    }  
 }
