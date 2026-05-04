@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -97,6 +98,17 @@ public class Canvas : INotifyPropertyChanged
         InvalidateImage();
     }
     
+    public void ReplaceShapes(IEnumerable<IShape> shapes)
+    {
+        PreviewShape = null;
+        Shapes.CollectionChanged -= OnCollectionChanged;
+        Shapes.Clear();
+        foreach (IShape shape in shapes)
+            Shapes.Add(shape);
+        Shapes.CollectionChanged += OnCollectionChanged;
+        RedrawShapes();
+    }
+    
     private void OnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         PixelBuffer buffer = GetPixelBuffer();
@@ -149,6 +161,7 @@ public class Canvas : INotifyPropertyChanged
     public void ClearCanvas()
     {
         Clear();
+        Shapes.Clear();
         Bitmap.UpdateBitmap();
         InvalidateImage();
     }

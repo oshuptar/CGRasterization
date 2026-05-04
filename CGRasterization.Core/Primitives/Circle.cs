@@ -11,13 +11,15 @@ namespace CGRasterization.Core.Primitives;
 public class Circle : IShape
 {
     public int Radius { get; set; }
-    public Point  Center { get; set; }
+    public Point Center { get; set; }
     public int Thickness { get; set; }
     public Color Color { get; set; }
-    public Circle(Point center, int radius)
+    public Circle(Point center, int radius,  Color color, int thickness)
     {
         Radius = radius;
         Center = center;
+        Color = color;
+        Thickness = thickness;
     }
     
     public Circle(Point center, Point onCircle, Color color, int thickness)

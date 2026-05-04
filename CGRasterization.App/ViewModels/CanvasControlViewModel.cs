@@ -1,8 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CGRasterization.App.Canvas.Enums;
 using CGRasterization.App.Canvas.Tools;
 using CGRasterization.App.Canvas.Tools.Abstractions;
+using CGRasterization.App.Dto;
+using CGRasterization.App.Mappers;
+using CGRasterization.App.Services;
+using CGRasterization.App.Services.Asbtractions;
 using CGRasterization.App.ViewModels.Abstractions;
 using CGRasterization.Core.Primitives.Abstractions;
 using CommunityToolkit.Mvvm.Input;
@@ -12,6 +17,7 @@ namespace CGRasterization.App.ViewModels;
 
 public class CanvasControlViewModel : ViewModelBase
 {
+    private readonly ICanvasPersistenceService _canvasPersistenceService = new CanvasPersistenceService();
     public Canvas.Canvas Canvas { get; set; } = new(1200, 800);
     public Avalonia.Media.Color SelectedShapeBrushColorPicker
     {
@@ -134,6 +140,14 @@ public class CanvasControlViewModel : ViewModelBase
         };
         SelectedToolType = CanvasToolType.None;
     }
+    public async Task SaveCanvasAsync() => await _canvasPersistenceService.SaveAsync(Canvas, "canvas.json");
+    public async Task LoadCanvasAsync()
+    {
+        CanvasDto dto = await _canvasPersistenceService.LoadAsync("canvas.json");
+        List<IShape> shapes = dto.FromDto();
+        Canvas.ReplaceShapes(shapes);
+        ResetSelection();
+    }
     private void SetToolMode(CanvasToolType canvasToolType){ 
         CurrentTool?.Cancel();
         Canvas.SetPreviewShape(null);
@@ -153,7 +167,6 @@ public class CanvasControlViewModel : ViewModelBase
         ResetSelection();
     }
     private void ResetSelection() => SelectedShape = null;
-
     private void RefreshFlags()
     {
         OnPropertyChanged(nameof(IsDrawCircleMode));

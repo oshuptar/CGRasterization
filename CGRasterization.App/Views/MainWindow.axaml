@@ -16,6 +16,8 @@
                 </Grid.RowDefinitions>
                 <Menu >
                         <MenuItem Header="Clear" Command="{Binding ClearBitmapCommand}"/>
+                        <MenuItem Header="Save" Command="{Binding SaveCanvasCommand}" />
+                        <MenuItem Header="Load" Command="{Binding LoadCanvasCommand}" />
                 </Menu>
                 <Border Grid.Row="1"
                         Margin="10"
