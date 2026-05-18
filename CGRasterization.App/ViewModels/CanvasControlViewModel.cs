@@ -4,11 +4,14 @@ using System.Threading.Tasks;
 using CGRasterization.App.Canvas.Enums;
 using CGRasterization.App.Canvas.Tools;
 using CGRasterization.App.Canvas.Tools.Abstractions;
+using CGRasterization.App.Clipping;
 using CGRasterization.App.Dto;
 using CGRasterization.App.Mappers;
 using CGRasterization.App.Services;
 using CGRasterization.App.Services.Asbtractions;
 using CGRasterization.App.ViewModels.Abstractions;
+using CGRasterization.Core.Clipping;
+using CGRasterization.Core.Primitives;
 using CGRasterization.Core.Primitives.Abstractions;
 using CommunityToolkit.Mvvm.Input;
 using Color = System.Drawing.Color;
@@ -85,6 +88,18 @@ public class CanvasControlViewModel : ViewModelBase
     public bool IsDrawRectangleMode => SelectedToolType == CanvasToolType.DrawRectangle;
     public bool IsMoveShapeMode => SelectedToolType == CanvasToolType.MoveShape;
     public bool IsEditShapeMode => SelectedToolType == CanvasToolType.EditShape;
+    public IShape? ClipWindowShape
+    {
+        get => field;
+        private set
+        {
+            if (field == value) return;
+            field = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(HasClipWindow));
+        }
+    }
+    public bool HasClipWindow => ClipWindowShape is not null;
     public RelayCommand SetLineDrawToolCommand { get; }
     public RelayCommand SetCircleDrawToolCommand { get; }
     public RelayCommand SetPolygonDrawToolCommand { get; }
@@ -93,6 +108,9 @@ public class CanvasControlViewModel : ViewModelBase
     public RelayCommand RemoveShapeCommand { get; }
     public RelayCommand MoveShapeCommand { get; }
     public RelayCommand EditShapeCommand { get; }
+    public RelayCommand SetClipWindowCommand { get; }
+    public RelayCommand ApplyCyrusBeckCommand { get; }
+    public RelayCommand ClearClipCommand { get; }
     private readonly Dictionary<CanvasToolType, ICanvasTool> _tools;
     public ICanvasTool? CurrentTool
     {
@@ -137,6 +155,25 @@ public class CanvasControlViewModel : ViewModelBase
         }, () => true);
         MoveShapeCommand = new RelayCommand(() => SetToolMode(CanvasToolType.MoveShape), () => true);
         EditShapeCommand = new RelayCommand(() => SetToolMode(CanvasToolType.EditShape), () => true);
+        SetClipWindowCommand = new RelayCommand(() =>
+        {
+            if (SelectedShape is not Polygon and not Rectangle) return;
+            ClipWindowShape = SelectedShape;
+        }, () => true);
+        ApplyCyrusBeckCommand = new RelayCommand(() =>
+        {
+            if (SelectedShape is not Polygon clippingPolygon) return;
+            if (ClipWindowShape is null || ClipWindowShape == SelectedShape) return;
+            var clipPoints = CyrusBeckClipper.GetClipWindowPoints(ClipWindowShape);
+            if (clipPoints is null) return;
+            if (!CyrusBeckClipper.IsConvex(clipPoints)) return;
+            Canvas.ActiveClipOperation = new ClipOperation(clippingPolygon, ClipWindowShape);
+        }, () => true);
+        ClearClipCommand = new RelayCommand(() =>
+        {
+            Canvas.ActiveClipOperation = null;
+            ClipWindowShape = null;
+        }, () => true);
         _tools = new Dictionary<CanvasToolType, ICanvasTool>
         {
             [CanvasToolType.DrawLine] = new DrawLineTool(),
@@ -172,8 +209,13 @@ public class CanvasControlViewModel : ViewModelBase
     public void RemoveShape(IShape? shape)
     {
         Console.WriteLine("Removing shape " + shape);
-        if (shape is not null)
-            Canvas.Shapes.Remove(shape);
+        if (shape is null) return;
+        if (shape == ClipWindowShape)
+        {
+            Canvas.ActiveClipOperation = null;
+            ClipWindowShape = null;
+        }
+        Canvas.Shapes.Remove(shape);
         ResetSelection();
     }
     private void ResetSelection() => SelectedShape = null;

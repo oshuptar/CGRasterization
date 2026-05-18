@@ -9,8 +9,11 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CGRasterization.App.Buffers;
+using CGRasterization.App.Clipping;
 using CGRasterization.Core.Buffers;
 using CGRasterization.Core.Buffers.Enums;
+using CGRasterization.Core.Clipping;
+using CGRasterization.Core.Primitives;
 using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers;
 using Color = System.Drawing.Color;
@@ -61,6 +64,17 @@ public class Canvas : INotifyPropertyChanged
     public int Height => Bitmap.Height;
     public ObservableCollection<IShape> Shapes { get; } = new();
     public IShape? PreviewShape { get; set; }
+    public ClipOperation? ActiveClipOperation
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+            RedrawShapes();
+            OnPropertyChanged();
+        }
+    }
     public bool AntiAliasingEnabled
     {
         get;
@@ -102,6 +116,8 @@ public class Canvas : INotifyPropertyChanged
             DrawShape(shape, buffer);
         if(PreviewShape is not null)
             DrawShape(PreviewShape, buffer);
+        if (ActiveClipOperation is not null)
+            DrawClipOverlay(ActiveClipOperation, buffer);
         Bitmap.UpdateBitmap();
         InvalidateImage();
     }
@@ -147,6 +163,19 @@ public class Canvas : INotifyPropertyChanged
             Bitmap.Stride,
             Bitmap.PixelFormat == PixelFormats.Gray8 ? ColorFormat.Grayscale : ColorFormat.Rgba);
 
+    private void DrawClipOverlay(ClipOperation op, PixelBuffer buffer)
+    {
+        var clipPoints = CyrusBeckClipper.GetClipWindowPoints(op.ClipWindow);
+        if (clipPoints is null) return;
+        var savedMode = _shapeRasterizer.LineRasterizationMode;
+        _shapeRasterizer.LineRasterizationMode = LineRasterizationMode.Bresenham;
+        foreach (var (p1, p2) in CyrusBeckClipper.ClipPolygonEdges(op.ClippingPolygon, clipPoints))
+        {
+            var segment = new Line(p1, p2, Color.Red, op.ClippingPolygon.Thickness);
+            _shapeRasterizer.Rasterize(segment, buffer);
+        }
+        _shapeRasterizer.LineRasterizationMode = savedMode;
+    }
     private void DrawShape(IShape shape, PixelBuffer buffer) => shape.RasterizeWith(_shapeRasterizer, buffer);
     private void InvalidateImage()
     {

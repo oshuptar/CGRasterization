@@ -106,7 +106,22 @@
                 </StackPanel>
                 <Separator Margin="0,4,0,0"/>
 
-               
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Cyrus-Beck Clipping"
+                               FontWeight="SemiBold"/>
+                    <Button Content="Set as Clip Window"
+                            Command="{Binding SetClipWindowCommand}"
+                            IsEnabled="{Binding IsSelectedShape}" />
+                    <Button Content="Apply Cyrus-Beck"
+                            Command="{Binding ApplyCyrusBeckCommand}"
+                            IsEnabled="{Binding HasClipWindow}" />
+                    <Button Content="Clear Clip"
+                            Command="{Binding ClearClipCommand}"
+                            IsEnabled="{Binding HasClipWindow}" />
+                </StackPanel>
+
+                <Separator Margin="0,4,0,0"/>
+
                 <StackPanel Spacing="10">
                     <TextBlock Text="Brush"
                                FontWeight="SemiBold"/>
