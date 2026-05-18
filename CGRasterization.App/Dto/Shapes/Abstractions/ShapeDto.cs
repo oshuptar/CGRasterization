@@ -6,4 +6,5 @@ namespace CGRasterization.App.Dto.Shapes.Abstractions;
 [JsonDerivedType(typeof(LineDto), "line")]
 [JsonDerivedType(typeof(CircleDto), "circle")]
 [JsonDerivedType(typeof(PolygonDto), "polygon")]
+[JsonDerivedType(typeof(RectangleDto), "rectangle")]
 public abstract record ShapeDto(int Thickness, ColorDto Color);

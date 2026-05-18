@@ -6,6 +6,7 @@ using CGRasterization.App.Dto.Shapes;
 using CGRasterization.App.Dto.Shapes.Abstractions;
 using CGRasterization.Core.Primitives;
 using CGRasterization.Core.Primitives.Abstractions;
+using Rectangle = CGRasterization.Core.Primitives.Rectangle;
 
 namespace CGRasterization.App.Mappers;
 
@@ -18,6 +19,7 @@ public static class ShapeDtoMapper
             Line line => line.ToDto(),
             Circle circle => circle.ToDto(),
             Polygon polygon => polygon.ToDto(),
+            Rectangle rectangle => rectangle.ToDto(),
             _ => throw new NotSupportedException($"Cannot convert shape of type {shape.GetType().Name} to DTO.")
         };
     }
@@ -28,6 +30,7 @@ public static class ShapeDtoMapper
             LineDto line => line.FromDto(),
             CircleDto circle => circle.FromDto(),
             PolygonDto polygon => polygon.FromDto(),
+            RectangleDto rectangle => rectangle.FromDto(),
             _ => throw new NotSupportedException($"Cannot convert DTO of type {dto.GetType().Name} to shape.")
         };
     }
@@ -58,6 +61,15 @@ public static class ShapeDtoMapper
             IsClosed: polygon.IsClosed
         );
     }
+    private static RectangleDto ToDto(this Rectangle rectangle)
+    {
+        return new RectangleDto(
+            TopLeft: rectangle.TopLeft.ToDto(),
+            BottomRight: rectangle.BottomRight.ToDto(),
+            Thickness: rectangle.Thickness,
+            Color: rectangle.Color.ToDto()
+        );
+    }
     private static Line FromDto(this LineDto line)
     {
         return new Line(
@@ -83,6 +95,15 @@ public static class ShapeDtoMapper
             polygon.IsClosed,
             polygon.Color.ToColor(),
             polygon.Thickness
+        );
+    }
+    private static Rectangle FromDto(this RectangleDto rectangle)
+    {
+        return new Rectangle(
+            rectangle.TopLeft.ToPoint(),
+            rectangle.BottomRight.ToPoint(),
+            rectangle.Color.ToColor(),
+            rectangle.Thickness
         );
     }
     private static PointDto ToDto(this Point point) => new PointDto(point.X, point.Y);

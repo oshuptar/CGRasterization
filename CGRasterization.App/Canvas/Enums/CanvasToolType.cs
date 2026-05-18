@@ -5,6 +5,7 @@ public enum CanvasToolType
     DrawLine,
     DrawCircle,
     DrawPolygon,
+    DrawRectangle,
     SelectShape,
     MoveShape,
     EditShape,

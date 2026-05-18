@@ -82,11 +82,13 @@ public class CanvasControlViewModel : ViewModelBase
     public bool IsDrawLineMode => SelectedToolType == CanvasToolType.DrawLine;
     public bool IsDrawCircleMode => SelectedToolType == CanvasToolType.DrawCircle;
     public bool IsDrawPolygonMode => SelectedToolType == CanvasToolType.DrawPolygon;
+    public bool IsDrawRectangleMode => SelectedToolType == CanvasToolType.DrawRectangle;
     public bool IsMoveShapeMode => SelectedToolType == CanvasToolType.MoveShape;
     public bool IsEditShapeMode => SelectedToolType == CanvasToolType.EditShape;
     public RelayCommand SetLineDrawToolCommand { get; }
     public RelayCommand SetCircleDrawToolCommand { get; }
     public RelayCommand SetPolygonDrawToolCommand { get; }
+    public RelayCommand SetRectangleDrawToolCommand { get; }
     public RelayCommand SetSelectShapeToolCommand { get; }
     public RelayCommand RemoveShapeCommand { get; }
     public RelayCommand MoveShapeCommand { get; }
@@ -118,6 +120,11 @@ public class CanvasControlViewModel : ViewModelBase
             SetToolMode(CanvasToolType.DrawPolygon);
             ResetSelection();
         }, () => true);
+        SetRectangleDrawToolCommand = new RelayCommand(() =>
+        {
+            SetToolMode(CanvasToolType.DrawRectangle);
+            ResetSelection();
+        }, () => true);
         SetSelectShapeToolCommand = new RelayCommand(() =>
         {
             SetToolMode(CanvasToolType.SelectShape);
@@ -138,6 +145,7 @@ public class CanvasControlViewModel : ViewModelBase
             [CanvasToolType.MoveShape] = new MoveShapeTool(),
             [CanvasToolType.EditShape] = new EditShapeTool(),
             [CanvasToolType.DrawPolygon] = new DrawPolygonTool(),
+            [CanvasToolType.DrawRectangle] = new DrawRectangleTool(),
         };
         SelectedToolType = CanvasToolType.None;
     }
@@ -174,6 +182,7 @@ public class CanvasControlViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsDrawCircleMode));
         OnPropertyChanged(nameof(IsDrawLineMode));
         OnPropertyChanged(nameof(IsDrawPolygonMode));
+        OnPropertyChanged(nameof(IsDrawRectangleMode));
         OnPropertyChanged(nameof(IsSelectShapeMode));
         OnPropertyChanged(nameof(IsMoveShapeMode));
         OnPropertyChanged(nameof(IsEditShapeMode));

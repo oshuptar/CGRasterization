@@ -47,6 +47,10 @@
                              GroupName="ShapeTypes"
                              IsChecked="{Binding IsDrawPolygonMode}"
                              Command="{Binding SetPolygonDrawToolCommand}" />
+                <RadioButton Content="Rectangle"
+                             GroupName="ShapeTypes"
+                             IsChecked="{Binding IsDrawRectangleMode}"
+                             Command="{Binding SetRectangleDrawToolCommand}" />
                 <CheckBox Content="Anti-aliasing"
                           IsChecked="{Binding Canvas.AntiAliasingEnabled, Mode=TwoWay}" />
             </StackPanel>
