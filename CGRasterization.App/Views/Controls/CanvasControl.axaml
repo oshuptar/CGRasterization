@@ -62,7 +62,7 @@
                 Padding="14"
                 BorderBrush="#DADADA"
                 BorderThickness="0,0,1,0">
-
+            <ScrollViewer VerticalScrollBarVisibility="Hidden">
             <StackPanel Spacing="16">
                 <TextBlock Text="Inspector"
                            FontSize="18"
@@ -90,10 +90,19 @@
                             </StackPanel>
                             <StackPanel Spacing="4" IsVisible="{Binding IsSelectedPolygon}">
                                 <TextBlock Text="Fill" FontWeight="SemiBold"/>
-                                <CheckBox Content="Enable fill"
-                                          IsChecked="{Binding SelectedShapeFillEnabled, Mode=TwoWay}"/>
-                                <ColorPicker Color="{Binding SelectedShapeFillColorPicker, Mode=TwoWay}"
-                                             IsEnabled="{Binding SelectedShapeFillEnabled}"/>
+                                <StackPanel Orientation="Horizontal" Spacing="4">
+                                    <CheckBox Content="Enable fill"
+                                              IsChecked="{Binding SelectedShapeFillEnabled, Mode=TwoWay}"
+                                              VerticalAlignment="Top"/>
+                                    <ColorPicker Color="{Binding SelectedShapeFillColorPicker, Mode=TwoWay}"
+                                                 IsEnabled="{Binding SelectedShapeFillEnabled}"
+                                                 VerticalAlignment="Top"/>
+                                </StackPanel>
+                                <Button Content="Load fill image"
+                                        Click="LoadFillImage_OnClick"/>
+                                <Button Content="Remove fill image"
+                                        Command="{Binding ClearFillImageCommand}"
+                                        IsEnabled="{Binding HasFillImage}"/>
                             </StackPanel>
                         </StackPanel>
                 </StackPanel>
@@ -155,6 +164,7 @@
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
+            </ScrollViewer>
         </Border>
         
         <ScrollViewer Grid.Row="1" 

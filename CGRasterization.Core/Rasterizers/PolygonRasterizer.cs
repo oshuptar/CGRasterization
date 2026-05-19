@@ -15,9 +15,15 @@ public class PolygonRasterizer : BaseRasterizer, IRasterizer<Polygon>
     }
     public void Rasterize(Polygon shape, PixelBuffer buffer)
     {
-        // Fill is drawn before edges - so the outline always appears on top
-        if (shape.IsClosed && shape.Vertices.Count >= 3 && shape.FillColor != null)
-            _fillRasterizer.Fill(shape.Vertices, shape.FillColor.Value, buffer);
+        // Fill is drawn before edges so the outline always appears on top.
+        // Image fill takes priority over solid colour fill.
+        if (shape.IsClosed && shape.Vertices.Count >= 3)
+        {
+            if (shape.FillImage != null)
+                _fillRasterizer.FillImage(shape.Vertices, shape.FillImage, buffer);
+            else if (shape.FillColor != null)
+                _fillRasterizer.Fill(shape.Vertices, shape.FillColor.Value, buffer);
+        }
 
         for (int i = 0; i < shape.Vertices.Count - 1; i++)
         {

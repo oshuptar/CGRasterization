@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using CGRasterization.App.Canvas.Enums;
 using CGRasterization.App.Canvas.Tools;
@@ -21,6 +22,7 @@ namespace CGRasterization.App.ViewModels;
 public class CanvasControlViewModel : ViewModelBase
 {
     private readonly ICanvasPersistenceService _canvasPersistenceService = new CanvasPersistenceService();
+    private readonly IFillImageService _fillImageService = new FillImageService();
     public Canvas.Canvas Canvas { get; set; } = new(1200, 800);
     public Avalonia.Media.Color SelectedShapeBrushColorPicker
     {
@@ -54,15 +56,17 @@ public class CanvasControlViewModel : ViewModelBase
         }
     }
     public bool IsSelectedPolygon => SelectedShape is Polygon; // Pattern - matching if a selected shape is a polygon
+    public bool HasFillImage => (SelectedShape as Polygon)?.FillImage != null;
     public bool SelectedShapeFillEnabled
     {
-        get => (SelectedShape as Polygon)?.FillColor != null;
+        get => (SelectedShape as Polygon)?.FillColor != null || (SelectedShape as Polygon)?.FillImage != null;
         set
         {
             if (SelectedShape is not Polygon polygon) return;
             polygon.FillColor = value
                 ? Color.FromArgb(SelectedShapeFillColorPicker.A, SelectedShapeFillColorPicker.R, SelectedShapeFillColorPicker.G, SelectedShapeFillColorPicker.B)
                 : null;
+            if (!value) polygon.FillImage = null;
             Canvas.RedrawShapes();
             OnPropertyChanged();
         }
@@ -143,6 +147,7 @@ public class CanvasControlViewModel : ViewModelBase
     public RelayCommand SetClipWindowCommand { get; }
     public RelayCommand ApplyCyrusBeckCommand { get; }
     public RelayCommand ClearClipCommand { get; }
+    public RelayCommand ClearFillImageCommand { get; }
     private readonly Dictionary<CanvasToolType, ICanvasTool> _tools;
     public ICanvasTool? CurrentTool
     {
@@ -205,6 +210,17 @@ public class CanvasControlViewModel : ViewModelBase
         {
             Canvas.ActiveClipOperation = null;
             ClipWindowShape = null;
+        }, () => true);
+        ClearFillImageCommand = new RelayCommand(() =>
+        {
+            if (SelectedShape is not Polygon polygon) return;
+            if (HasFillImage)
+            {
+                polygon.FillImage = null;
+                Canvas.RedrawShapes();
+                OnPropertyChanged(nameof(HasFillImage));
+                OnPropertyChanged(nameof(SelectedShapeFillEnabled));
+            }
         }, () => true);
         _tools = new Dictionary<CanvasToolType, ICanvasTool>
         {
@@ -269,6 +285,18 @@ public class CanvasControlViewModel : ViewModelBase
         OnPropertyChanged(nameof(IsSelectedPolygon));
         OnPropertyChanged(nameof(SelectedShapeFillEnabled));
         OnPropertyChanged(nameof(SelectedShapeFillColorPicker));
+        OnPropertyChanged(nameof(HasFillImage));
+    }
+
+    public void SetFillImage(Stream stream)
+    {
+        if (SelectedShape is not Polygon polygon) return;
+        var pattern = _fillImageService.Load(stream);
+        if (pattern is null) return;
+        polygon.FillImage = pattern;
+        Canvas.RedrawShapes();
+        OnPropertyChanged(nameof(SelectedShapeFillEnabled));
+        OnPropertyChanged(nameof(HasFillImage));
     }
 
     public void ClearCanvas()

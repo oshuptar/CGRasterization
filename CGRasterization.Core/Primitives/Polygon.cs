@@ -1,5 +1,6 @@
 using System.Drawing;
 using CGRasterization.Core.Buffers;
+using CGRasterization.Core.ImagePattern;
 using CGRasterization.Core.Primitives.Abstractions;
 using CGRasterization.Core.Rasterizers.Abstractions;
 using CGRasterization.Core.ShapeHandles;
@@ -15,6 +16,7 @@ public class Polygon : IShape
     public int Thickness { get; set; }
     public bool IsClosed { get; set; }
     public Color? FillColor { get; set; }
+    public ImagePattern.ImagePattern? FillImage { get; set; }
     public Polygon(List<Point> vertices, bool isClosed, Color color, int thickness)
     {
         Vertices = vertices.ToList();
