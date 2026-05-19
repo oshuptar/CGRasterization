@@ -58,7 +58,8 @@ public static class ShapeDtoMapper
             Points: polygon.Vertices.Select(p => p.ToDto()).ToList(),
             Thickness: polygon.Thickness,
             Color: polygon.Color.ToDto(),
-            IsClosed: polygon.IsClosed
+            IsClosed: polygon.IsClosed,
+            FillColor: polygon.FillColor?.ToDto()
         );
     }
     private static RectangleDto ToDto(this Rectangle rectangle)
@@ -95,7 +96,10 @@ public static class ShapeDtoMapper
             polygon.IsClosed,
             polygon.Color.ToColor(),
             polygon.Thickness
-        );
+        )
+        {
+            FillColor = polygon.FillColor?.ToColor()
+        };
     }
     private static Rectangle FromDto(this RectangleDto rectangle)
     {

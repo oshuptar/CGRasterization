@@ -88,6 +88,13 @@
                                 <ColorPicker Color="{Binding SelectedShapeBrushColorPicker, Mode=TwoWay}"
                                              VerticalAlignment="Top"/>
                             </StackPanel>
+                            <StackPanel Spacing="4" IsVisible="{Binding IsSelectedPolygon}">
+                                <TextBlock Text="Fill" FontWeight="SemiBold"/>
+                                <CheckBox Content="Enable fill"
+                                          IsChecked="{Binding SelectedShapeFillEnabled, Mode=TwoWay}"/>
+                                <ColorPicker Color="{Binding SelectedShapeFillColorPicker, Mode=TwoWay}"
+                                             IsEnabled="{Binding SelectedShapeFillEnabled}"/>
+                            </StackPanel>
                         </StackPanel>
                 </StackPanel>
 

@@ -53,6 +53,36 @@ public class CanvasControlViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+    public bool IsSelectedPolygon => SelectedShape is Polygon; // Pattern - matching if a selected shape is a polygon
+    public bool SelectedShapeFillEnabled
+    {
+        get => (SelectedShape as Polygon)?.FillColor != null;
+        set
+        {
+            if (SelectedShape is not Polygon polygon) return;
+            polygon.FillColor = value
+                ? Color.FromArgb(SelectedShapeFillColorPicker.A, SelectedShapeFillColorPicker.R, SelectedShapeFillColorPicker.G, SelectedShapeFillColorPicker.B)
+                : null;
+            Canvas.RedrawShapes();
+            OnPropertyChanged();
+        }
+    }
+    public Avalonia.Media.Color SelectedShapeFillColorPicker
+    {
+        get;
+        set
+        {
+            if (field == value) return;
+            field = value;
+            if (SelectedShape is Polygon polygon)
+            {
+                polygon.FillColor = Color.FromArgb(value.A, value.R, value.G, value.B);
+                Canvas.RedrawShapes();
+            }
+            OnPropertyChanged();
+        }
+    } = Avalonia.Media.Colors.White;
+    
     public IShape? SelectedShape
     {
         get => field;
@@ -64,6 +94,8 @@ public class CanvasControlViewModel : ViewModelBase
             {
                 SelectedShapeBrushColorPicker = Avalonia.Media.Color.FromArgb(field.Color.A,field.Color.R,field.Color.G,field.Color.B);
                 SelectedShapeThickness = field.Thickness;
+                if (field is Polygon p && p.FillColor != null)
+                    SelectedShapeFillColorPicker = Avalonia.Media.Color.FromArgb(p.FillColor.Value.A, p.FillColor.Value.R, p.FillColor.Value.G, p.FillColor.Value.B);
             }
             RefreshSelected();
         }
@@ -234,6 +266,9 @@ public class CanvasControlViewModel : ViewModelBase
         OnPropertyChanged(nameof(SelectedShape));
         OnPropertyChanged(nameof(IsSelectedShape));
         OnPropertyChanged(nameof(SelectedShapeControlsOpacity));
+        OnPropertyChanged(nameof(IsSelectedPolygon));
+        OnPropertyChanged(nameof(SelectedShapeFillEnabled));
+        OnPropertyChanged(nameof(SelectedShapeFillColorPicker));
     }
 
     public void ClearCanvas()

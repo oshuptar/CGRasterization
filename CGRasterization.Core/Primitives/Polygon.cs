@@ -14,6 +14,7 @@ public class Polygon : IShape
     public Color Color { get; set; }
     public int Thickness { get; set; }
     public bool IsClosed { get; set; }
+    public Color? FillColor { get; set; }
     public Polygon(List<Point> vertices, bool isClosed, Color color, int thickness)
     {
         Vertices = vertices.ToList();

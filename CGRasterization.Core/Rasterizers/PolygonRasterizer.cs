@@ -8,12 +8,17 @@ namespace CGRasterization.Core.Rasterizers;
 public class PolygonRasterizer : BaseRasterizer, IRasterizer<Polygon>
 {
     private readonly IRasterizer<Line> _lineRasterizer;
+    private readonly PolygonFillRasterizer _fillRasterizer = new();
     public PolygonRasterizer(IRasterizer<Line> lineRasterizer)
     {
         _lineRasterizer = lineRasterizer;
     }
     public void Rasterize(Polygon shape, PixelBuffer buffer)
     {
+        // Fill is drawn before edges - so the outline always appears on top
+        if (shape.IsClosed && shape.Vertices.Count >= 3 && shape.FillColor != null)
+            _fillRasterizer.Fill(shape.Vertices, shape.FillColor.Value, buffer);
+
         for (int i = 0; i < shape.Vertices.Count - 1; i++)
         {
             Point currentPoint = shape.Vertices[i];
